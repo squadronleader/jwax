@@ -1,0 +1,26 @@
+# Keep the package lean - exclude development and test files
+*.md
+!README.md
+.git
+.gitignore
+.github
+docs/
+samples/
+test/
+archive/
+scripts/
+*.log
+.DS_Store
+tsconfig.json
+jest.config.js
+plan.md
+AGENTS.md
+
+# Source files (TypeScript already compiled to dist/)
+src/
+
+# Don't include executable builds
+*.exe
+jwax-linux
+jwax-macos
+executables/

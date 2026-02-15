@@ -1,0 +1,23 @@
+{
+  "data": {
+    "clients": {
+      "users": [
+        { "name": "jane", "dob": "1990-01-01", "age": 33, "city": "London" },
+        { "name": "bob", "dob": "1985-05-12", "age": 38, "city": "Paris" },
+        { "name": "jane", "dob": "1992-08-22", "age": 31, "city": "New York" }
+      ],
+      "account": [
+        { "user": "jane", "balance": 1000 },
+        { "user": "bob", "balance": 1500 },
+        { "user": "jane", "balance": 2000 }
+      ]
+    },
+    "products": {
+      "items": [
+        { "id": 1, "name": "Laptop", "price": 999.99 },
+        { "id": 2, "name": "Smartphone", "price": 499.99 },
+        { "id": 3, "name": "Tablet", "price": 299.99 }
+      ]
+    }
+  }
+}
