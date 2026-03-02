@@ -1,21 +1,30 @@
 {
-  "name": "@jwax/cli",
+  "name": "jwax",
   "version": "1.0.0",
   "description": "CLI tool for querying JSON files with SQL",
   "main": "dist/cli.js",
+  "types": "dist/cli.d.ts",
   "bin": {
     "jwax": "bin/jwax.js"
   },
+  "files": [
+    "dist",
+    "bin/jwax.js",
+    "README.md"
+  ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsup",
     "clean": "rm -rf dist",
     "start": "node dist/cli.js",
     "dev": "ts-node bin/jwax.ts",
-    "test": "jest"
+    "test": "jest",
+    "prepublishOnly": "npm run build && npm test"
   },
   "dependencies": {
-    "@jwax/core": "1.0.0",
-    "commander": "^12.1.0"
+    "better-sqlite3": "^12.6.2",
+    "cli-table3": "^0.6.0",
+    "commander": "^12.1.0",
+    "jwax": "file:jwax-1.0.0.tgz"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
@@ -23,6 +32,7 @@
     "jest": "^29.5.0",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.1",
+    "tsup": "^8.5.1",
     "typescript": "^5.2.2"
   },
   "engines": {
@@ -39,9 +49,15 @@
   ],
   "author": "",
   "license": "MIT",
-  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/squadronleader/jwax"
+  },
+  "homepage": "https://github.com/squadronleader/jwax#readme",
+  "bugs": {
+    "url": "https://github.com/squadronleader/jwax/issues"
   }
 }

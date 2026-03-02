@@ -13,7 +13,7 @@
     "clean": "npm run clean --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "dev": "ts-node packages/cli/bin/jwax.ts",
-    "start": "npm run start --workspace=@jwax/cli --",
+    "start": "npm run start --workspace=jwax --",
     "docs:build": "mkdocs build",
     "docs:serve": "mkdocs serve"
   },

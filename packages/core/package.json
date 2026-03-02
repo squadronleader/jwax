@@ -9,10 +9,17 @@
     "clean": "rm -rf dist",
     "test": "jest"
   },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "better-sqlite3": "^12.6.2",
     "cli-table3": "^0.6.0"
   },
+  "bundleDependencies": [
+    "better-sqlite3",
+    "cli-table3"
+  ],
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
     "@types/jest": "^30.0.0",
@@ -29,5 +36,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/squadronleader/jwax"
+  },
+  "homepage": "https://github.com/squadronleader/jwax#readme",
+  "bugs": {
+    "url": "https://github.com/squadronleader/jwax/issues"
   }
 }

@@ -31,7 +31,7 @@
 ### CLI Tool
 
 ```bash
-# From npm (Coming Soon)
+# From npm
 npm install -g jwax
 
 # Local development
