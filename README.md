@@ -32,7 +32,7 @@
 
 ```bash
 # From npm
-npm install -g jwax
+npm install -g @squadronleader/jwax
 
 # Local development
 git clone https://github.com/squadronleader/jwax

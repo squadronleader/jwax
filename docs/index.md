@@ -21,7 +21,7 @@
 
 ```bash
 # Install the CLI
-npm install -g jwax
+npm install -g @squadronleader/jwax
 
 # Query a JSON file
 jwax data.json

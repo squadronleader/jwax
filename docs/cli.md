@@ -48,6 +48,19 @@ npm start -- samples/demo.json
 npm start -- --query "SELECT * FROM users" samples/demo.json
 ```
 
+### From npm
+
+```bash
+# Install globally
+npm install -g @squadronleader/jwax
+
+# Run the CLI
+jwax samples/demo.json
+
+# With options
+jwax --query "SELECT * FROM users" samples/demo.json
+```
+
 ### Global Install (from npm)
 
 ```bash
