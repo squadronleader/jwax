@@ -23,8 +23,7 @@
   "dependencies": {
     "better-sqlite3": "^12.6.2",
     "cli-table3": "^0.6.0",
-    "commander": "^12.1.0",
-    "jwax": "file:jwax-1.0.0.tgz"
+    "commander": "^12.1.0"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
