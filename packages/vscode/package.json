@@ -1,5 +1,5 @@
 {
-  "name": "jwax",
+  "name": "jwax-vscode",
   "displayName": "JWAX",
   "description": "Query JSON files with full SQL syntax using an in-memory SQLite database",
   "version": "1.0.0",

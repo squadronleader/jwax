@@ -48,7 +48,7 @@ npm start -- samples/demo.json
 npm start -- --query "SELECT * FROM users" samples/demo.json
 ```
 
-### Global Install (from npm — Coming Soon)
+### Global Install (from npm)
 
 ```bash
 npm install -g jwax

@@ -51,8 +51,8 @@ This automatically:
 Always test before publishing:
 
 ```bash
-# Create tarball
-npm pack
+# Create CLI tarball
+npm pack --workspace=jwax
 
 # Install globally from tarball
 npm install -g ./jwax-<version>.tgz
@@ -68,10 +68,10 @@ npm uninstall -g jwax
 
 ```bash
 # Dry run to see what will be published
-npm publish --dry-run
+npm publish --dry-run --workspace=jwax
 
-# Actually publish
-npm publish
+# Publish CLI
+npm publish --workspace=jwax
 ```
 
 **Note**: The `prepublishOnly` script automatically runs `npm run build && npm test` before publishing.
@@ -155,15 +155,11 @@ git push origin main --tags
 
 ## Package Files
 
-The `.npmignore` file controls what's included in the npm package. Current exclusions:
-- Source TypeScript files (only compiled JS in `dist/` is included)
-- Test files and samples
-- Documentation (except README)
-- Development scripts
+Published workspace packages use their `files` field in `package.json` to control what is included (runtime `dist/`, CLI bin script, package README, plus bundled runtime dependencies).
 
 To check what will be included:
 ```bash
-npm pack --dry-run
+npm pack --dry-run --workspace=jwax
 ```
 
 ## Useful Commands
