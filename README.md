@@ -1,5 +1,15 @@
-# JWAX
+<div align="center">
+  <img src="docs/assets/logo-jwax.png" alt="JWAX Logo" width="360">
+</div>
 
+<div align="center">
+
+# The missing JSON to SQL tool
+
+</div>
+
+>   
+> 
 > **Admit it.**
 > 
 > You don't want a new DSL.
