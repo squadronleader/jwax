@@ -1,5 +1,5 @@
 {
-  "name": "jwax",
+  "name": "@squadronleader/jwax",
   "version": "1.0.0",
   "description": "CLI tool for querying JSON files with SQL",
   "main": "dist/cli.js",
@@ -46,7 +46,7 @@
     "database",
     "repl"
   ],
-  "author": "",
+  "author": "squadronleader <contact@jwax.simplelogin.com>",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
