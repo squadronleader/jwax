@@ -1,10 +1,10 @@
 # Publishing to npm
 
-This guide explains how to publish the `jwax` CLI to the npm registry.
+This guide explains how to publish the `@squadronleader/jwax` CLI to the npm registry.
 
 ## Architecture Notes
 
-Only `packages/cli` (published as `jwax`) is distributed via npm. `packages/core` is a private workspace package — its code is **bundled directly into `dist/cli.js`** at build time using `tsup`, so no separate publish is needed and users only install one package.
+Only `packages/cli` (published as `@squadronleader/jwax`) is distributed via npm. `packages/core` is a private workspace package — its code is **bundled directly into `dist/cli.js`** at build time using `tsup`, so no separate publish is needed and users only install one package.
 
 ## Prerequisites
 
@@ -70,15 +70,15 @@ npm publish
 
 ```bash
 # View package info on npm
-npm view jwax
+npm view @squadronleader/jwax
 
 # Install from npm globally and test
-npm install -g jwax
+npm install -g @squadronleader/jwax
 jwax --version
 jwax --help
 
 # Uninstall
-npm uninstall -g jwax
+npm uninstall -g @squadronleader/jwax
 ```
 
 ### 5. Create GitHub Release
@@ -104,7 +104,7 @@ npm run build
 npm install -g .
 jwax --version
 jwax --query "SELECT * FROM users" samples/demo.json
-npm uninstall -g jwax
+npm uninstall -g @squadronleader/jwax
 ```
 
 ### Full end-to-end test (closest to real publish)
@@ -120,7 +120,7 @@ npm install -g ./jwax-<version>.tgz
 jwax --version
 jwax --query "SELECT * FROM users" samples/demo.json
 
-npm uninstall -g jwax
+npm uninstall -g @squadronleader/jwax
 rm jwax-<version>.tgz
 ```
 
@@ -150,7 +150,7 @@ git push origin main --tags
 If you need to unpublish (only possible within 72 hours):
 
 ```bash
-npm unpublish jwax@1.0.0
+npm unpublish @squadronleader/jwax@1.0.0
 ```
 
 **Warning**: Unpublishing can break dependent projects. Only use in emergencies.
