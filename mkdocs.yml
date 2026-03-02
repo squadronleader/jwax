@@ -1,0 +1,69 @@
+site_name: JWAX
+site_description: Query JSON files with full SQL syntax using SQLite
+site_url: https://squadronleader.github.io/jwax/
+repo_url: https://github.com/squadronleader/jwax
+repo_name: jwax
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  language: en
+  logo: assets/logo-jwax.png
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+
+plugins:
+  - search
+  - glightbox
+
+markdown_extensions:
+  - pymdownx.highlight:
+      use_pygments: true
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - toc:
+      permalink: true
+  - admonition
+  - pymdownx.details
+
+nav:
+  - Home: index.md
+  - Quick Start:
+    - Getting Started: getting-started.md
+    - Installation & Setup: getting-started.md
+    - Usage Guide: USAGE.md
+  - Guides:
+    - CLI Tool: cli.md
+    - VS Code Extension: vscode-extension.md
+    - Schema & Validation: SCHEMA.md
+    - Advanced Features: ADVANCED.md
+  - Learning:
+    - How It Works: structure.md
+  - Development:
+    - Development & Testing: DEVELOPMENT.md
+    - Publishing: PUBLISHING.md
+  - Roadmap: future-features.md

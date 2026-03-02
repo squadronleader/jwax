@@ -1,0 +1,19 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "value": null,
+      "mixed": "string"
+    },
+    {
+      "id": 2,
+      "value": 42,
+      "mixed": 123
+    },
+    {
+      "id": 3,
+      "different_field": "test"
+    }
+  ],
+  "empty": []
+}

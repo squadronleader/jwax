@@ -1,0 +1,57 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Alice",
+      "age": 30,
+      "email": "alice@example.com",
+      "address": {
+        "city": "New York",
+        "state": "NY",
+        "zip": "10001"
+      }
+    },
+    {
+      "id": 2,
+      "name": "Bob",
+      "age": 25,
+      "email": "bob@example.com",
+      "address": {
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90001"
+      }
+    },
+    {
+      "id": 3,
+      "name": "Charlie",
+      "age": 35,
+      "email": "charlie@example.com",
+      "address": {
+        "city": "Chicago",
+        "state": "IL",
+        "zip": "60601"
+      }
+    }
+  ],
+  "orders": [
+    {
+      "order_id": 101,
+      "user_id": 1,
+      "total": 99.99,
+      "status": "delivered"
+    },
+    {
+      "order_id": 102,
+      "user_id": 2,
+      "total": 49.99,
+      "status": "pending"
+    },
+    {
+      "order_id": 103,
+      "user_id": 1,
+      "total": 149.99,
+      "status": "delivered"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "name": "jwax-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Query JSON files with full SQL syntax using SQLite",
+  "workspaces": [
+    "packages/core",
+    "packages/cli",
+    "packages/vscode"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "clean": "npm run clean --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "dev": "ts-node packages/cli/bin/jwax.ts",
+    "start": "npm run start --workspace=jwax --",
+    "docs:build": "mkdocs build",
+    "docs:serve": "mkdocs serve"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "json",
+    "sql",
+    "query",
+    "sqlite",
+    "cli",
+    "database",
+    "repl"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/squadronleader/jwax"
+  }
+}

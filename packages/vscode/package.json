@@ -1,0 +1,77 @@
+{
+  "name": "jwax-vscode",
+  "displayName": "JWAX",
+  "description": "Query JSON files with full SQL syntax using an in-memory SQLite database",
+  "version": "1.0.0",
+  "publisher": "squadronleader",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./dist/src/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "jwax.runQuery",
+        "title": "JWAX: Run SQL Query"
+      },
+      {
+        "command": "jwax.showTables",
+        "title": "JWAX: Show Tables"
+      },
+      {
+        "command": "jwax.showSchema",
+        "title": "JWAX: Show Schema"
+      }
+    ],
+    "configuration": {
+      "title": "JWAX",
+      "properties": {
+        "jwax.queryHistorySize": {
+          "type": "number",
+          "default": 5,
+          "minimum": 0,
+          "maximum": 50,
+          "description": "Number of recent queries to remember per file. Set to 0 to disable query history."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "watch": "tsc -watch",
+    "test": "jest",
+    "test:integration": "node dist/test/integration/runTest.js",
+    "vscode:prepublish": "npm run build",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "@jwax/core": "1.0.0",
+    "sql.js": "^1.14.0"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/jest": "^30.0.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^18.0.0",
+    "@types/sql.js": "^1.4.9",
+    "@types/vscode": "^1.85.0",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
+    "glob": "^7.2.3",
+    "jest": "^29.5.0",
+    "mocha": "^11.7.5",
+    "ts-jest": "^29.4.6",
+    "typescript": "^5.2.2"
+  },
+  "license": "MIT",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/squadronleader/jwax"
+  }
+}
