@@ -1,6 +1,10 @@
 # Publishing to npm
 
-This guide explains how to publish jwax to the npm registry when you're ready.
+This guide explains how to publish the `jwax` CLI to the npm registry.
+
+## Architecture Notes
+
+Only `packages/cli` (published as `jwax`) is distributed via npm. `packages/core` is a private workspace package — its code is **bundled directly into `dist/cli.js`** at build time using `tsup`, so no separate publish is needed and users only install one package.
 
 ## Prerequisites
 
@@ -17,20 +21,21 @@ npm login
 Before publishing, ensure:
 
 - [ ] All tests pass: `npm test`
-- [ ] Code is built: `npm run build`
-- [ ] Version number is correct in `package.json`
+- [ ] Build succeeds: `cd packages/cli && npm run build`
+- [ ] Version number is correct in `packages/cli/package.json`
 - [ ] README.md is up-to-date
-- [ ] LICENSE file exists (currently MIT)
-- [ ] Repository URL is correct in `package.json`
-- [ ] Author field is filled in `package.json`
+- [ ] Repository URL is correct in `packages/cli/package.json`
+- [ ] Author field is filled in `packages/cli/package.json`
 
 ## Publishing Steps
 
 ### 1. Update Version
 
-Follow [semantic versioning](https://semver.org/):
+Run this from `packages/cli`. Follow [semantic versioning](https://semver.org/):
 
 ```bash
+cd packages/cli
+
 # Patch release (1.0.0 -> 1.0.1) - bug fixes
 npm version patch
 
@@ -41,37 +46,22 @@ npm version minor
 npm version major
 ```
 
-This automatically:
-- Updates `package.json` version
-- Creates a git commit
-- Creates a git tag
+This automatically updates `package.json`, creates a git commit, and creates a git tag.
 
 ### 2. Test the Package Locally
 
-Always test before publishing:
-
-```bash
-# Create CLI tarball
-npm pack --workspace=jwax
-
-# Install globally from tarball
-npm install -g ./jwax-<version>.tgz
-
-# Test the CLI
-jwax samples/demo.json
-
-# Uninstall after testing
-npm uninstall -g jwax
-```
+See the [Local Testing](#local-testing) section below.
 
 ### 3. Publish to npm
 
 ```bash
-# Dry run to see what will be published
-npm publish --dry-run --workspace=jwax
+cd packages/cli
 
-# Publish CLI
-npm publish --workspace=jwax
+# Dry run — confirms what will be published without actually publishing
+npm publish --dry-run
+
+# Publish
+npm publish
 ```
 
 **Note**: The `prepublishOnly` script automatically runs `npm run build && npm test` before publishing.
@@ -79,101 +69,88 @@ npm publish --workspace=jwax
 ### 4. Verify Publication
 
 ```bash
-# View package on npm
+# View package info on npm
 npm view jwax
 
-# Install from npm to test
+# Install from npm globally and test
 npm install -g jwax
-
-# Test
+jwax --version
 jwax --help
+
+# Uninstall
+npm uninstall -g jwax
 ```
 
 ### 5. Create GitHub Release
 
-After publishing to npm:
-
 ```bash
-# Push version tags to GitHub
+# Push version tag to GitHub
 git push origin main --tags
 
-# Create a release on GitHub
-# Go to: https://github.com/squadronleader/jwax/releases/new
-# Select the tag created by `npm version`
-# Add release notes
+# Then create a release at:
+# https://github.com/squadronleader/jwax/releases/new
+# Select the tag created by `npm version` and add release notes
 ```
 
-## Package Scope
+## Local Testing
 
-If you want to publish under an organization (e.g., `@yourorg/jwax`):
+### Quick test (no tarball)
 
-1. Update `package.json`:
-```json
-{
-  "name": "@yourorg/jwax",
-  ...
-}
-```
-
-2. Publish with access flag:
-```bash
-npm publish --access public
-```
-
-## Unpublishing
-
-If you need to unpublish (within 72 hours):
+Installs directly from the package directory — fast for iterative development:
 
 ```bash
-# Unpublish a specific version
-npm unpublish jwax@1.0.0
-
-# Unpublish all versions (use with caution!)
-npm unpublish jwax --force
+cd packages/cli
+npm run build
+npm install -g .
+jwax --version
+jwax --query "SELECT * FROM users" samples/demo.json
+npm uninstall -g jwax
 ```
 
-**Warning**: Unpublishing can break dependent projects. Only use in emergencies.
+### Full end-to-end test (closest to real publish)
+
+Packs a tarball and installs it — tests exactly what users will get:
+
+```bash
+cd packages/cli
+npm run build
+npm pack
+
+npm install -g ./jwax-<version>.tgz
+jwax --version
+jwax --query "SELECT * FROM users" samples/demo.json
+
+npm uninstall -g jwax
+rm jwax-<version>.tgz
+```
+
+To inspect the tarball contents before installing:
+
+```bash
+npm pack --dry-run
+```
 
 ## Updating After Publication
 
-For updates:
-
 ```bash
-# Make your changes
-# Update tests
-npm test
+cd packages/cli
 
 # Bump version
 npm version patch  # or minor/major
 
-# Publish
+# Publish (build + tests run automatically)
 npm publish
 
 # Push to GitHub
 git push origin main --tags
 ```
 
-## Package Files
+## Unpublishing
 
-Published workspace packages use their `files` field in `package.json` to control what is included (runtime `dist/`, CLI bin script, package README, plus bundled runtime dependencies).
-
-To check what will be included:
-```bash
-npm pack --dry-run --workspace=jwax
-```
-
-## Useful Commands
+If you need to unpublish (only possible within 72 hours):
 
 ```bash
-# View your published packages
-npm profile get
-
-# View package info
-npm view jwax
-
-# Check package size
-npm pack --dry-run
-
-# List files that will be included
-npm publish --dry-run
+npm unpublish jwax@1.0.0
 ```
+
+**Warning**: Unpublishing can break dependent projects. Only use in emergencies.
