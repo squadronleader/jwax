@@ -7,7 +7,7 @@ describe('normalizer', () => {
         const input = [{ name: 'Alice' }, { name: 'Bob' }];
         const result = normalizeJsonStructure(input);
 
-        expect(result).toEqual({ data: input });
+        expect(result).toEqual({ root: input });
       });
 
       it('should return root object as-is', () => {
@@ -51,117 +51,35 @@ describe('normalizer', () => {
       });
     });
 
-    describe('table name derivation from source', () => {
-      it('should use "data" for stdin source', () => {
+    describe('default table name', () => {
+      it('should use "root" when no source or tableName is provided', () => {
+        const input = [{ id: 1 }];
+        const result = normalizeJsonStructure(input);
+
+        expect(result).toEqual({ root: input });
+      });
+
+      it('should use "root" regardless of source (stdin)', () => {
         const input = [{ id: 1 }];
         const result = normalizeJsonStructure(input, { source: 'stdin' });
 
-        expect(result).toEqual({ data: input });
+        expect(result).toEqual({ root: input });
       });
 
-      it('should use "data" for null source', () => {
+      it('should use "root" regardless of source (file path)', () => {
         const input = [{ id: 1 }];
-        const result = normalizeJsonStructure(input, { source: null as any });
+        const result = normalizeJsonStructure(input, { source: '/path/to/users.json' });
 
-        expect(result).toEqual({ data: input });
+        expect(result).toEqual({ root: input });
       });
 
-      it('should use "data" for undefined source', () => {
+      it('should use "root" regardless of source (URL)', () => {
         const input = [{ id: 1 }];
-        const result = normalizeJsonStructure(input, { source: undefined });
-
-        expect(result).toEqual({ data: input });
-      });
-
-      describe('file path derivation', () => {
-        it('should extract filename from absolute path', () => {
-          const input = [{ id: 1 }];
-          const result = normalizeJsonStructure(input, { source: '/path/to/users.json' });
-
-          expect(result).toEqual({ users: input });
+        const result = normalizeJsonStructure(input, {
+          source: 'https://example.com/api/users.json'
         });
 
-        it('should extract filename from relative path', () => {
-          const input = [{ id: 1 }];
-          const result = normalizeJsonStructure(input, { source: './data/products.json' });
-
-          expect(result).toEqual({ products: input });
-        });
-
-        it('should handle simple filename without path', () => {
-          const input = [{ id: 1 }];
-          const result = normalizeJsonStructure(input, { source: 'items.json' });
-
-          expect(result).toEqual({ items: input });
-        });
-
-        it('should remove .json extension', () => {
-          const input = [{ id: 1 }];
-          const result = normalizeJsonStructure(input, { source: 'mydata.json' });
-
-          expect(result).toEqual({ mydata: input });
-        });
-
-        it('should handle files with multiple extensions', () => {
-          const input = [{ id: 1 }];
-          const result = normalizeJsonStructure(input, { source: 'archive.tar.gz.json' });
-
-          expect(result).toEqual({ archive_tar_gz: input });
-        });
-
-        it('should sanitize special characters in filename', () => {
-          const input = [{ id: 1 }];
-          const result = normalizeJsonStructure(input, { source: 'my-data-file.json' });
-
-          expect(result).toEqual({ my_data_file: input });
-        });
-      });
-
-      describe('URL path derivation', () => {
-        it('should extract last path segment from URL', () => {
-          const input = [{ id: 1 }];
-          const result = normalizeJsonStructure(input, {
-            source: 'https://example.com/api/users.json'
-          });
-
-          expect(result).toEqual({ users: input });
-        });
-
-        it('should handle URL without file extension', () => {
-          const input = [{ id: 1 }];
-          const result = normalizeJsonStructure(input, {
-            source: 'https://api.example.com/data/items'
-          });
-
-          expect(result).toEqual({ items: input });
-        });
-
-        it('should fallback to "data" for URL with no path', () => {
-          const input = [{ id: 1 }];
-          const result = normalizeJsonStructure(input, {
-            source: 'https://example.com/'
-          });
-
-          expect(result).toEqual({ data: input });
-        });
-
-        it('should handle HTTP URLs', () => {
-          const input = [{ id: 1 }];
-          const result = normalizeJsonStructure(input, {
-            source: 'http://example.com/products.json'
-          });
-
-          expect(result).toEqual({ products: input });
-        });
-
-        it('should handle query parameters in URL', () => {
-          const input = [{ id: 1 }];
-          const result = normalizeJsonStructure(input, {
-            source: 'https://api.example.com/items.json?key=value'
-          });
-
-          expect(result).toEqual({ items: input });
-        });
+        expect(result).toEqual({ root: input });
       });
     });
 
@@ -170,21 +88,21 @@ describe('normalizer', () => {
         const input: any[] = [];
         const result = normalizeJsonStructure(input);
 
-        expect(result).toEqual({ data: input });
+        expect(result).toEqual({ root: input });
       });
 
       it('should handle array with null/undefined items', () => {
         const input = [null, undefined, { id: 1 }];
         const result = normalizeJsonStructure(input);
 
-        expect(result).toEqual({ data: input });
+        expect(result).toEqual({ root: input });
       });
 
       it('should handle nested arrays (not unwrapped)', () => {
         const input = [[1, 2], [3, 4]];
         const result = normalizeJsonStructure(input);
 
-        expect(result).toEqual({ data: input });
+        expect(result).toEqual({ root: input });
       });
 
       it('should handle object with array values', () => {
