@@ -24,6 +24,28 @@ export function discoverSchema(root: any, options: DiscoverOptions = {}): Schema
   // Walk the JSON structure
   walkJson(root, [], [], null, tables, rootTables, options);
 
+  // If root is a plain object with scalar values but walkJson found no tables,
+  // treat the root object itself as a single-row 'root' table
+  if (tables.size === 0 && root !== null && typeof root === 'object' && Object.keys(root).length > 0) {
+    const hasScalars = Object.values(root).some(v => v === null || typeof v !== 'object');
+    if (hasScalars) {
+      const columns = inferColumnTypes([root], { strictSchema: options.strictSchema });
+      const allColumns: ColumnDef[] = [{ name: '_id', type: 'INTEGER', primaryKey: true }];
+      for (const [originalName, column] of columns) {
+        allColumns.push({ ...column, originalName });
+      }
+      const tableSchema: TableSchema = {
+        name: 'root',
+        path: [],
+        originalPath: [],
+        columns: allColumns,
+        primaryKey: '_id',
+      };
+      tables.set('root', tableSchema);
+      rootTables.push('root');
+    }
+  }
+
   return { tables, rootTables };
 }
 
