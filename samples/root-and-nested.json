@@ -1,0 +1,6 @@
+{
+    "root": "value",
+    "child": {
+        "child1": 123
+    }
+}

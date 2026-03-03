@@ -21,8 +21,33 @@ export function discoverSchema(root: any, options: DiscoverOptions = {}): Schema
     return { tables, rootTables };
   }
 
-  // Walk the JSON structure
-  walkJson(root, [], [], null, tables, rootTables, options);
+  // If root is a non-empty plain object with any scalar values, create a 'root' table
+  // for those scalar fields first, then pass 'root' as parentTable so children get _pid.
+  // inferColumnTypes already skips nested objects/arrays, so only scalar columns are included.
+  let rootParentTable: string | null = null;
+  if (root !== null && typeof root === 'object' && Object.keys(root).length > 0) {
+    const hasScalars = Object.values(root).some(v => v === null || typeof v !== 'object');
+    if (hasScalars) {
+      const columns = inferColumnTypes([root], { strictSchema: options.strictSchema });
+      const allColumns: ColumnDef[] = [{ name: '_id', type: 'INTEGER', primaryKey: true }];
+      for (const [originalName, column] of columns) {
+        allColumns.push({ ...column, originalName });
+      }
+      const tableSchema: TableSchema = {
+        name: 'root',
+        path: [],
+        originalPath: [],
+        columns: allColumns,
+        primaryKey: '_id',
+      };
+      tables.set('root', tableSchema);
+      rootTables.push('root');
+      rootParentTable = 'root';
+    }
+  }
+
+  // Walk the JSON structure; children of a root table get linked via _pid
+  walkJson(root, [], [], rootParentTable, tables, rootTables, options);
 
   return { tables, rootTables };
 }
