@@ -12,21 +12,21 @@ export interface CliOptionConfig {
 
 export const CLI_OPTIONS: CliOptionConfig[] = [
   {
-    flags: '--strict-schema',
+    flags: '-s, --strict-schema',
     description: 'Use strict schema validation',
   },
   {
-    flags: '--timeout <seconds>',
+    flags: '-t, --timeout <seconds>',
     description: 'Timeout for loading URLs (in seconds)',
     defaultValue: (val: string) => parseInt(val, 10) * 1000,
   },
   {
-    flags: '--output-format <format>',
+    flags: '-f, --output-format <format>',
     description: 'Output format (table or json)',
     defaultValue: 'table',
   },
   {
-    flags: '--query <sql>',
+    flags: '-q, --query <sql>',
     description: 'Execute SQL query and exit (non-interactive mode)',
   },
   {
@@ -34,11 +34,11 @@ export const CLI_OPTIONS: CliOptionConfig[] = [
     description: 'Force interactive mode when reading from stdin',
   },
   {
-    flags: '--root-name <name>',
+    flags: '-r, --root-name <name>',
     description: 'Override the default root table name (default: root)',
   },
   {
-    flags: '--no-timing',
+    flags: '-T, --no-timing',
     description: 'Suppress load time display',
   },
 ];
