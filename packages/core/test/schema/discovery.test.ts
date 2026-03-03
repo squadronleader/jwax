@@ -340,4 +340,68 @@ describe('discoverSchema', () => {
       expect(coordsTable?.parentTable).toBe('company_headquarters');
     });
   });
+
+  describe('root scalar tables', () => {
+    it('should create root table and child table when root has scalars and nested object', () => {
+      const json = { root: 'val', child: { child1: 1 } };
+      const schema = discoverSchema(json);
+      expect(schema.tables.size).toBe(2);
+      expect(schema.tables.has('root')).toBe(true);
+      expect(schema.tables.has('child')).toBe(true);
+      expect(schema.rootTables).toContain('root');
+      expect(schema.rootTables).not.toContain('child');
+      const rootTable = schema.tables.get('root')!;
+      expect(rootTable.columns.map(c => c.name)).toContain('root');
+      const childTable = schema.tables.get('child')!;
+      expect(childTable.parentTable).toBe('root');
+      expect(childTable.parentKey).toBe('_pid');
+      expect(childTable.columns.map(c => c.name)).toContain('_pid');
+      expect(childTable.columns.map(c => c.name)).toContain('child1');
+    });
+
+    it('should create root table and items table when root has scalars and nested array', () => {
+      const json = { root: 'val', items: [{ id: 1 }] };
+      const schema = discoverSchema(json);
+      expect(schema.tables.size).toBe(2);
+      expect(schema.tables.has('root')).toBe(true);
+      expect(schema.tables.has('items')).toBe(true);
+      const itemsTable = schema.tables.get('items')!;
+      expect(itemsTable.parentTable).toBe('root');
+      expect(itemsTable.columns.map(c => c.name)).toContain('_pid');
+    });
+
+    it('should create root table with scalar columns only when there are no children', () => {
+      const json = { test: 'val', test2: 123 };
+      const schema = discoverSchema(json);
+      expect(schema.tables.size).toBe(1);
+      expect(schema.tables.has('root')).toBe(true);
+      const rootTable = schema.tables.get('root')!;
+      expect(rootTable.columns.map(c => c.name)).toContain('_id');
+      expect(rootTable.columns.map(c => c.name)).toContain('test');
+      expect(rootTable.columns.map(c => c.name)).toContain('test2');
+    });
+
+    it('should create correct parent chain for deeply nested children when root has scalars', () => {
+      const json = { label: 'top', child: { name: 'c1', grand: { x: 1 } } };
+      const schema = discoverSchema(json);
+      expect(schema.tables.size).toBe(3);
+      expect(schema.tables.has('root')).toBe(true);
+      expect(schema.tables.has('child')).toBe(true);
+      expect(schema.tables.has('child_grand')).toBe(true);
+      expect(schema.tables.get('child')!.parentTable).toBe('root');
+      expect(schema.tables.get('child_grand')!.parentTable).toBe('child');
+    });
+
+    it('should handle mixed scalars, nested object, and nested array at root', () => {
+      const json = { title: 't', meta: { k: 1 }, tags: [{ v: 2 }] };
+      const schema = discoverSchema(json);
+      expect(schema.tables.size).toBe(3);
+      expect(schema.tables.has('root')).toBe(true);
+      expect(schema.tables.has('meta')).toBe(true);
+      expect(schema.tables.has('tags')).toBe(true);
+      expect(schema.tables.get('meta')!.parentTable).toBe('root');
+      expect(schema.tables.get('tags')!.parentTable).toBe('root');
+      expect(schema.rootTables).toEqual(['root']);
+    });
+  });
 });

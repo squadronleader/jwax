@@ -1,9 +1,6 @@
 {
     "root": "value",
     "child": {
-        "child1": 123,
-        "child": {
-            "nested3": true
-        }
+        "child1": 123
     }
 }
