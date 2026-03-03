@@ -59,7 +59,7 @@ describe('loader', () => {
     });
 
     describe('direct array support', () => {
-      it('should wrap direct array from file with table name from filename', async () => {
+      it('should wrap direct array from file with default table name "root"', async () => {
         const testFile = path.join(tempDir, 'users.json');
         const arrayData = [
           { id: 1, name: 'Alice' },
@@ -70,13 +70,13 @@ describe('loader', () => {
         const json = await loadJson(testFile);
 
         expect(json).toBeDefined();
-        expect(json.users).toBeDefined();
-        expect(Array.isArray(json.users)).toBe(true);
-        expect(json.users).toHaveLength(2);
-        expect(json.users[0].name).toBe('Alice');
+        expect(json.root).toBeDefined();
+        expect(Array.isArray(json.root)).toBe(true);
+        expect(json.root).toHaveLength(2);
+        expect(json.root[0].name).toBe('Alice');
       });
 
-      it('should sanitize table names with hyphens', async () => {
+      it('should use "root" as default table name regardless of filename with hyphens', async () => {
         const testFile = path.join(tempDir, 'test-data.json');
         const arrayData = [{ id: 1 }];
         fs.writeFileSync(testFile, JSON.stringify(arrayData));
@@ -84,11 +84,11 @@ describe('loader', () => {
         const json = await loadJson(testFile);
 
         expect(json).toBeDefined();
-        expect(json.test_data).toBeDefined();
-        expect(Array.isArray(json.test_data)).toBe(true);
+        expect(json.root).toBeDefined();
+        expect(Array.isArray(json.root)).toBe(true);
       });
 
-      it('should sanitize table names with special characters', async () => {
+      it('should use "root" as default table name regardless of filename with special characters', async () => {
         const testFile = path.join(tempDir, 'my@data#file.json');
         const arrayData = [{ id: 1 }];
         fs.writeFileSync(testFile, JSON.stringify(arrayData));
@@ -96,11 +96,11 @@ describe('loader', () => {
         const json = await loadJson(testFile);
 
         expect(json).toBeDefined();
-        expect(json.my_data_file).toBeDefined();
-        expect(Array.isArray(json.my_data_file)).toBe(true);
+        expect(json.root).toBeDefined();
+        expect(Array.isArray(json.root)).toBe(true);
       });
 
-      it('should prefix table names starting with numbers', async () => {
+      it('should use "root" as default table name regardless of filename starting with numbers', async () => {
         const testFile = path.join(tempDir, '123data.json');
         const arrayData = [{ id: 1 }];
         fs.writeFileSync(testFile, JSON.stringify(arrayData));
@@ -108,11 +108,11 @@ describe('loader', () => {
         const json = await loadJson(testFile);
 
         expect(json).toBeDefined();
-        expect(json.t_123data).toBeDefined();
-        expect(Array.isArray(json.t_123data)).toBe(true);
+        expect(json.root).toBeDefined();
+        expect(Array.isArray(json.root)).toBe(true);
       });
 
-      it('should use "data" as fallback for empty filename', async () => {
+      it('should use "root" as default table name for empty filename', async () => {
         const testFile = path.join(tempDir, '.json');
         const arrayData = [{ id: 1 }];
         fs.writeFileSync(testFile, JSON.stringify(arrayData));
@@ -120,8 +120,8 @@ describe('loader', () => {
         const json = await loadJson(testFile);
 
         expect(json).toBeDefined();
-        expect(json.data).toBeDefined();
-        expect(Array.isArray(json.data)).toBe(true);
+        expect(json.root).toBeDefined();
+        expect(Array.isArray(json.root)).toBe(true);
       });
 
       it('should not wrap object-based JSON', async () => {

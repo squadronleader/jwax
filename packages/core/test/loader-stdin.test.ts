@@ -55,14 +55,14 @@ describe('Stdin Detection', () => {
       fs.unlinkSync(tmpFile);
     });
 
-    it('should derive table name from filename when no override', async () => {
+    it('should use "root" as default table name when no override', async () => {
       const tmpFile = '/tmp/products.json';
       fs.writeFileSync(tmpFile, JSON.stringify([{ id: 1 }]));
       
       const result = await loadJson(tmpFile);
       
       expect(result).toEqual({
-        products: [{ id: 1 }]
+        root: [{ id: 1 }]
       });
       
       fs.unlinkSync(tmpFile);

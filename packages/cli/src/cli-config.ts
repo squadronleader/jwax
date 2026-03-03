@@ -34,8 +34,8 @@ export const CLI_OPTIONS: CliOptionConfig[] = [
     description: 'Force interactive mode when reading from stdin',
   },
   {
-    flags: '--table-name <name>',
-    description: 'Override the default table name for top-level arrays',
+    flags: '--root-name <name>',
+    description: 'Override the default root table name (default: root)',
   },
   {
     flags: '--no-timing',

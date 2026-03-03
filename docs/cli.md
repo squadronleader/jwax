@@ -80,7 +80,7 @@ Options:
   -q, --query <sql>     Run a single query and exit (non-interactive)
   -t, --timeout <sec>   URL fetch timeout in seconds (default: 5)
   -i, --interactive     Force interactive mode with piped input
-  --table-name <name>   Custom table name for piped/URL data
+  --root-name <name>    Override the default root table name (default: root)
   --strict-schema       Enable strict schema validation
   --output-format <fmt> Output format: table (default) or json
   -h, --help            Show help
@@ -107,16 +107,16 @@ jwax --timeout 10 https://api.example.com/data.json
 
 ```bash
 # Pipe from curl
-curl https://api.example.com/users | jwax --query "SELECT * FROM data"
+curl https://api.example.com/users | jwax --query "SELECT * FROM root"
 
 # Pipe from cat
-cat data.json | jwax --query "SELECT name FROM data WHERE age > 25"
+cat data.json | jwax --query "SELECT name FROM root WHERE age > 25"
 
 # Force interactive mode with piped data
 cat data.json | jwax -i
 
 # Custom table name
-curl https://api.example.com/users | jwax --table-name users --query "SELECT * FROM users"
+curl https://api.example.com/users | jwax --root-name users --query "SELECT * FROM users"
 ```
 
 ## Interactive Commands

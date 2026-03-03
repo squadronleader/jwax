@@ -31,7 +31,7 @@ const opts = program.opts<{
   outputFormat?: string;
   query?: string;
   interactive?: boolean;
-  tableName?: string;
+  rootName?: string;
   timing?: boolean;
 }>();
 
@@ -56,7 +56,7 @@ const cliOptions = {
   strictSchema: opts.strictSchema,
   timeoutMs: opts.timeout,
   outputFormat,
-  tableName: opts.tableName,
+  tableName: opts.rootName,
   showTiming: opts.timing,
 };
 
