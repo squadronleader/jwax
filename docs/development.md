@@ -62,10 +62,16 @@ npm run clean && npm run build
 ### Running Tests
 
 ```bash
-# Run all tests across all packages
+# Verify native better-sqlite3 readiness (local dev)
+npm run native:check
+
+# Repair native better-sqlite3 bindings, then re-check
+npm run native:fix
+
+# Run all tests across all packages (runs native:check first)
 npm test
 
-# Run tests for a specific package
+# Run tests for a specific package (core/cli run native check first)
 cd packages/core && npm test
 cd packages/cli && npm test
 cd packages/vscode && npm test
