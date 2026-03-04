@@ -1,5 +1,5 @@
 site_name: JWAX
-site_description: Query JSON files with full SQL syntax using SQLite
+site_description: The missing json query tool, Query JSON files using SQL
 site_url: https://squadronleader.github.io/jwax/
 repo_url: https://github.com/squadronleader/jwax
 repo_name: jwax
@@ -25,6 +25,7 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
   features:
+    - navigation.tabs
     - navigation.instant
     - navigation.tracking
     - navigation.top
@@ -55,15 +56,15 @@ nav:
   - Quick Start:
     - Getting Started: getting-started.md
     - Installation & Setup: getting-started.md
-    - Usage Guide: USAGE.md
+    - Usage Guide: usage.md
   - Guides:
     - CLI Tool: cli.md
     - VS Code Extension: vscode-extension.md
-    - Schema & Validation: SCHEMA.md
-    - Advanced Features: ADVANCED.md
+    - Schema & Validation: schema.md
+    - Advanced Features: advanced.md
   - Learning:
     - How It Works: structure.md
   - Development:
-    - Development & Testing: DEVELOPMENT.md
-    - Publishing: PUBLISHING.md
+    - Development & Testing: development.md
+    - Publishing: publishing.md
   - Roadmap: future-features.md
