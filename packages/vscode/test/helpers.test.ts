@@ -84,13 +84,13 @@ describe('createLoadedOrchestrator', () => {
 
     try {
       const tables = orchestrator.listTables();
-      // Root array should be wrapped as 'data' table
-      expect(tables).toContain('data');
+      // Root array should be wrapped as 'root' table
+      expect(tables).toContain('root');
       // Nested objects should still create related tables
-      expect(tables).toContain('data_address');
+      expect(tables).toContain('root_address');
       
       // Verify we can query it
-      const result = orchestrator.executeQuery('SELECT COUNT(*) as cnt FROM data');
+      const result = orchestrator.executeQuery('SELECT COUNT(*) as cnt FROM root');
       expect(result.rows[0][0]).toBe(2);
     } finally {
       orchestrator.close();
