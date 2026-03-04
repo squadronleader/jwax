@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf dist",
-    "test": "jest"
+    "test": "node ../../scripts/check-native-sqlite.js && jest"
   },
   "files": [
     "dist"

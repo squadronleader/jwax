@@ -9,9 +9,11 @@
     "packages/vscode"
   ],
   "scripts": {
+    "native:check": "node scripts/check-native-sqlite.js",
+    "native:fix": "npm rebuild better-sqlite3 --workspace=@jwax/core && npm rebuild better-sqlite3 --workspace=@squadronleader/jwax && npm run native:check",
     "build": "npm run build --workspaces --if-present",
     "clean": "npm run clean --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present",
+    "test": "npm run native:check && npm run test --workspaces --if-present",
     "dev": "ts-node packages/cli/bin/jwax.ts",
     "start": "npm run start --workspace=jwax --",
     "docs:build": "mkdocs build",

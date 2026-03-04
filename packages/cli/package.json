@@ -17,7 +17,7 @@
     "clean": "rm -rf dist",
     "start": "node dist/cli.js",
     "dev": "ts-node bin/jwax.ts",
-    "test": "jest",
+    "test": "node ../../scripts/check-native-sqlite.js && jest",
     "prepublishOnly": "npm run build && npm test"
   },
   "dependencies": {
