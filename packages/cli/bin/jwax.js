@@ -2,13 +2,14 @@
 const { startCli, startNonInteractiveCli } = require('../dist/cli');
 const { CLI_OPTIONS } = require('../dist/cli-config');
 const { Command } = require('commander');
+const { version } = require('../package.json');
 
 const program = new Command();
 
 program
   .name('jwax')
   .description('Query JSON files with full SQL syntax using SQLite')
-  .version('1.0.0')
+  .version(version)
   .argument('[source]', 'Path to JSON file, URL, or "-" for stdin (omit to read from stdin)');
 
 for (const option of CLI_OPTIONS) {
