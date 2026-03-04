@@ -10,4 +10,5 @@ export interface TerminalOptions {
   enableInlineHints?: boolean;
   outputFormat?: FormatterType;
   loadTimeMs?: number;
+  engineName?: 'native' | 'wasm';
 }

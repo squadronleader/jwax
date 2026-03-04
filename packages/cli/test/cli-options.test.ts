@@ -77,5 +77,11 @@ describe('CLI Entry Points', () => {
       expect(timingOption).toBeDefined();
       expect(timingOption?.description).toContain('Suppress load time display');
     });
+
+    it('--engine flag should exist', () => {
+      const engineOption = CLI_OPTIONS.find(opt => opt.flags.includes('--engine'));
+      expect(engineOption).toBeDefined();
+      expect(engineOption?.description).toContain('Engine mode');
+    });
   });
 });

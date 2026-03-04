@@ -34,12 +34,18 @@ if (opts.outputFormat && !validFormats.includes(opts.outputFormat)) {
   console.error(`Error: Invalid output format "${opts.outputFormat}". Must be "table" or "json".`);
   process.exit(2);
 }
+const validEngines = ['auto', 'native', 'wasm'];
+if (opts.engine && !validEngines.includes(opts.engine)) {
+  console.error(`Error: Invalid engine "${opts.engine}". Must be "auto", "native", or "wasm".`);
+  process.exit(2);
+}
 
 const outputFormat = opts.outputFormat || 'table';
 const cliOptions = {
   strictSchema: opts.strictSchema,
   timeoutMs: opts.timeout,
   outputFormat,
+  engine: opts.engine || 'auto',
   tableName: opts.tableName,
   showTiming: opts.timing,
 };

@@ -1,6 +1,9 @@
-import { QueryOrchestrator, OrchestratorOptions, loadJson, isUrl, FormatterType } from '@jwax/core';
+import { QueryOrchestrator, loadJson, isUrl, FormatterType } from '@jwax/core';
 import { PerformanceTimer } from '@jwax/core';
 import { ReadlineTerminal } from './terminal';
+import { SqlJsAdapter } from './sqljs-adapter';
+
+type EngineMode = 'auto' | 'native' | 'wasm';
 
 export interface CliOptions {
   strictSchema?: boolean;
@@ -8,6 +11,26 @@ export interface CliOptions {
   outputFormat?: FormatterType;
   tableName?: string;
   showTiming?: boolean;
+  engine?: EngineMode;
+}
+
+async function createOrchestrator(options: CliOptions): Promise<{ orchestrator: QueryOrchestrator; engineName: 'native' | 'wasm' }> {
+  const engineMode = options.engine ?? 'auto';
+  if (engineMode === 'wasm') {
+    const adapter = await SqlJsAdapter.create();
+    return { orchestrator: new QueryOrchestrator(adapter, { strictSchema: options.strictSchema }), engineName: 'wasm' };
+  }
+
+  if (engineMode === 'native') {
+    return { orchestrator: new QueryOrchestrator('sqlite', { strictSchema: options.strictSchema }), engineName: 'native' };
+  }
+
+  try {
+    return { orchestrator: new QueryOrchestrator('sqlite', { strictSchema: options.strictSchema }), engineName: 'native' };
+  } catch {
+    const adapter = await SqlJsAdapter.create();
+    return { orchestrator: new QueryOrchestrator(adapter, { strictSchema: options.strictSchema }), engineName: 'wasm' };
+  }
 }
 
 export async function startCli(source: string | null, options: CliOptions = {}): Promise<void> {
@@ -59,7 +82,7 @@ export async function startCli(source: string | null, options: CliOptions = {}):
 
   // Initialize orchestrator and load JSON with timing
   const timer = new PerformanceTimer();
-  const orchestrator = new QueryOrchestrator('sqlite', { strictSchema: options.strictSchema });
+  const { orchestrator, engineName } = await createOrchestrator(options);
   try {
     timer.start();
     orchestrator.loadJson(root);
@@ -73,6 +96,7 @@ export async function startCli(source: string | null, options: CliOptions = {}):
       enableAutocomplete: true,
       enableInlineHints: true,
       outputFormat: options.outputFormat,
+      engineName,
       loadTimeMs: options.showTiming !== false ? loadTimeMs : undefined,
     });
 
@@ -108,7 +132,7 @@ export async function startNonInteractiveCli(
   }
 
   // Initialize orchestrator and load JSON
-  const orchestrator = new QueryOrchestrator('sqlite', { strictSchema: options.strictSchema });
+  const { orchestrator } = await createOrchestrator(options);
   try {
     orchestrator.loadJson(root);
   } catch (err: any) {

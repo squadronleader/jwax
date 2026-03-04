@@ -23,6 +23,9 @@ jwax [OPTIONS] [source]
 | `--strict-schema` | Enable strict schema validation with NOT NULL constraints on always-present fields | `jwax --strict-schema data.json` |
 | `--timeout <seconds>` | Set timeout for loading JSON from URLs (default: 5 seconds) | `jwax --timeout 10 https://example.com/data.json` |
 | `--output-format <format>` | Set output format for query results in interactive mode (table or json) | `jwax --output-format json data.json` |
+| `--engine <mode>` | Select SQL engine mode (`auto`, `native`, `wasm`) | `jwax --engine wasm data.json` |
+
+`auto` (default) tries native SQLite first and silently falls back to `wasm` when native is unavailable.
 
 ### Combining Options
 

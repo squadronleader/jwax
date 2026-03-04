@@ -6,7 +6,7 @@ import { ITerminalInterface, TerminalOptions } from './interface';
 export class ReadlineTerminal implements ITerminalInterface {
   private rl: readline.Interface | null = null;
   private orchestrator: QueryOrchestrator;
-  private options: Required<Omit<TerminalOptions, 'loadTimeMs'>> & { loadTimeMs?: number };
+  private options: Required<Omit<TerminalOptions, 'loadTimeMs' | 'engineName'>> & { loadTimeMs?: number; engineName?: 'native' | 'wasm' };
   private currentHint: string = '';
   private formatter: OutputFormatter;
   private multilineMode: boolean = false;
@@ -21,6 +21,7 @@ export class ReadlineTerminal implements ITerminalInterface {
       enableInlineHints: options.enableInlineHints ?? true,
       outputFormat: options.outputFormat ?? 'table',
       loadTimeMs: options.loadTimeMs,
+      engineName: options.engineName,
     };
     this.loadTimeMs = options.loadTimeMs;
     this.formatter = createFormatter(this.options.outputFormat);
@@ -41,6 +42,9 @@ export class ReadlineTerminal implements ITerminalInterface {
 
     const tables = this.orchestrator.listTables();
     const timingInfo = this.loadTimeMs !== undefined ? ` in ${Math.round(this.loadTimeMs)}ms` : '';
+    if (this.options.engineName) {
+      console.log(`Engine: ${this.options.engineName}`);
+    }
     console.log(`Discovered ${tables.length} table(s)${timingInfo}.`);
     console.log('Enter SQL queries (type :help for commands, :schema to view loaded schemas, :quit to exit).\n');
 

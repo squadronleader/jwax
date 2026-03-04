@@ -17,17 +17,21 @@
     "clean": "rm -rf dist",
     "start": "node dist/cli.js",
     "dev": "ts-node bin/jwax.ts",
-    "test": "node ../../scripts/check-native-sqlite.js && jest",
+    "test": "node ../../scripts/check-native-sqlite.js --warn-only && jest",
     "prepublishOnly": "npm run build && npm test"
   },
   "dependencies": {
-    "better-sqlite3": "^12.6.2",
     "cli-table3": "^0.6.0",
-    "commander": "^12.1.0"
+    "commander": "^12.1.0",
+    "sql.js": "^1.14.0"
+  },
+  "optionalDependencies": {
+    "better-sqlite3": "^12.6.2"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "@types/node": "^18.0.0",
+    "@types/sql.js": "^1.4.9",
     "jest": "^29.5.0",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.1",

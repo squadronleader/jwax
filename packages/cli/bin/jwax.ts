@@ -29,6 +29,7 @@ const opts = program.opts<{
   strictSchema?: boolean;
   timeout?: number;
   outputFormat?: string;
+  engine?: string;
   query?: string;
   interactive?: boolean;
   rootName?: string;
@@ -51,11 +52,17 @@ if (opts.outputFormat && !validFormats.includes(opts.outputFormat as FormatterTy
 }
 
 const outputFormat = (opts.outputFormat || 'table') as FormatterType;
+const validEngines = ['auto', 'native', 'wasm'] as const;
+if (opts.engine && !validEngines.includes(opts.engine as any)) {
+  console.error(`Error: Invalid engine "${opts.engine}". Must be "auto", "native", or "wasm".`);
+  process.exit(2);
+}
 
 const cliOptions = {
   strictSchema: opts.strictSchema,
   timeoutMs: opts.timeout,
   outputFormat,
+  engine: (opts.engine || 'auto') as 'auto' | 'native' | 'wasm',
   tableName: opts.rootName,
   showTiming: opts.timing,
 };
