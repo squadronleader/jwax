@@ -3,13 +3,14 @@ import { Command } from 'commander';
 import { startCli, startNonInteractiveCli } from '../src/cli';
 import { FormatterType } from '@jwax/core';
 import { CLI_OPTIONS } from '../src/cli-config';
+const { version } = require('../package.json');
 
 const program = new Command();
 
 program
   .name('jwax')
   .description('Query JSON files with full SQL syntax using SQLite')
-  .version('1.0.0')
+  .version(version)
   .argument('[source]', 'Path to JSON file, URL, or "-" for stdin (omit to read from stdin)');
 
 // Dynamically add all options from shared config

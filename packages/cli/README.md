@@ -10,6 +10,10 @@
 
 Query JSON files with SQL from your terminal.
 
+## Changelog
+
+See [change.md](https://github.com/squadronleader/jwax/blob/main/change.md) for release notes.
+
 ## Install
 
 ```bash
