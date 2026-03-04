@@ -36,7 +36,9 @@ npm run dev -- https://example.com/api/data.json
 
 You'll see:
 ```
-Loaded samples/demo.json. Discovered 3 table(s).
+Loaded samples/demo.json.
+Engine: native
+Discovered 3 table(s).
 Enter SQL queries (type :help for commands, :quit to exit).
 
 jwax>

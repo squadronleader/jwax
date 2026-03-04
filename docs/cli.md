@@ -80,12 +80,15 @@ Options:
   -q, --query <sql>     Run a single query and exit (non-interactive)
   -t, --timeout <sec>   URL fetch timeout in seconds (default: 5)
   -i, --interactive     Force interactive mode with piped input
+  -e, --engine <mode>   Engine mode: auto (default), native, wasm
   --root-name <name>    Override the default root table name (default: root)
   --strict-schema       Enable strict schema validation
   --output-format <fmt> Output format: table (default) or json
   -h, --help            Show help
   -V, --version         Show version
 ```
+
+`auto` mode tries native SQLite first and silently falls back to `wasm` if native is unavailable.
 
 ## Input Sources
 

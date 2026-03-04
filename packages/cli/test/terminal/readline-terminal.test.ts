@@ -51,6 +51,22 @@ describe('ReadlineTerminal', () => {
     orchestrator.close();
   });
 
+  it('should print engine before discovery line when provided', () => {
+    const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+    const terminalWithEngine = new ReadlineTerminal(orchestrator, {
+      enableAutocomplete: false,
+      enableInlineHints: false,
+      engineName: 'wasm',
+    });
+
+    terminalWithEngine.start();
+
+    const calls = consoleSpy.mock.calls.map(call => String(call[0]));
+    expect(calls.indexOf('Engine: wasm')).toBeGreaterThanOrEqual(0);
+    expect(calls.indexOf('Discovered 1 table(s).')).toBeGreaterThan(calls.indexOf('Engine: wasm'));
+    consoleSpy.mockRestore();
+  });
+
   describe('Empty results handling', () => {
     it('should display "Your query returned no results." when query returns no rows', () => {
       const consoleSpy = jest.spyOn(console, 'log').mockImplementation();

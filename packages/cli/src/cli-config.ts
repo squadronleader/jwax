@@ -41,4 +41,9 @@ export const CLI_OPTIONS: CliOptionConfig[] = [
     flags: '-T, --no-timing',
     description: 'Suppress load time display',
   },
+  {
+    flags: '-e, --engine <mode>',
+    description: 'Engine mode (auto, native, wasm)',
+    defaultValue: 'auto',
+  },
 ];
