@@ -52,6 +52,53 @@ export function discoverSchema(root: any, options: DiscoverOptions = {}): Schema
   return { tables, rootTables };
 }
 
+function mergeColumnType(existingType: ColumnDef['type'], incomingType: ColumnDef['type']): ColumnDef['type'] {
+  if (existingType === incomingType) return existingType;
+  if (existingType === 'TEXT' || incomingType === 'TEXT') return 'TEXT';
+  if ((existingType === 'REAL' && incomingType === 'INTEGER') || (existingType === 'INTEGER' && incomingType === 'REAL')) {
+    return 'REAL';
+  }
+  if (existingType === 'NULL') return incomingType;
+  if (incomingType === 'NULL') return existingType;
+  return 'TEXT';
+}
+
+function mergeTableSchema(existing: TableSchema, incoming: TableSchema): TableSchema {
+  if (existing.columns.length === 0) {
+    return incoming;
+  }
+
+  const mergedColumns = new Map<string, ColumnDef>();
+  for (const col of existing.columns) {
+    mergedColumns.set(col.name, { ...col });
+  }
+
+  for (const col of incoming.columns) {
+    const current = mergedColumns.get(col.name);
+    if (!current) {
+      mergedColumns.set(col.name, { ...col });
+      continue;
+    }
+
+    mergedColumns.set(col.name, {
+      ...current,
+      type: mergeColumnType(current.type, col.type),
+      nullable: Boolean(current.nullable || col.nullable),
+      primaryKey: Boolean(current.primaryKey || col.primaryKey),
+      originalName: current.originalName ?? col.originalName,
+    });
+  }
+
+  return {
+    ...existing,
+    path: existing.path.length > 0 ? existing.path : incoming.path,
+    originalPath: existing.originalPath.length > 0 ? existing.originalPath : incoming.originalPath,
+    parentTable: existing.parentTable ?? incoming.parentTable,
+    parentKey: existing.parentKey ?? incoming.parentKey,
+    columns: Array.from(mergedColumns.values()),
+  };
+}
+
 function walkJson(
   value: any,
   path: string[],
@@ -81,11 +128,16 @@ function walkJson(
           parentTable: parentTable ?? undefined,
           parentKey: parentTable ? '_pid' : undefined
         };
+      const existing = tables.get(tableName);
+      if (existing) {
+        tables.set(tableName, mergeTableSchema(existing, schema));
+      } else {
         tables.set(tableName, schema);
-        
-        if (!parentTable) {
-          rootTables.push(tableName);
-        }
+      }
+
+      if (!parentTable && !rootTables.includes(tableName)) {
+        rootTables.push(tableName);
+      }
       }
       return;
     }
@@ -119,9 +171,14 @@ function walkJson(
       parentKey: parentTable ? '_pid' : undefined
     };
 
-    tables.set(tableName, schema);
-    
-    if (!parentTable) {
+    const existing = tables.get(tableName);
+    if (existing) {
+      tables.set(tableName, mergeTableSchema(existing, schema));
+    } else {
+      tables.set(tableName, schema);
+    }
+
+    if (!parentTable && !rootTables.includes(tableName)) {
       rootTables.push(tableName);
     }
 

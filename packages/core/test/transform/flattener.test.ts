@@ -173,6 +173,49 @@ describe('flattenJson', () => {
     });
   });
 
+  describe('polymorphic path shapes', () => {
+    it('should materialize rows from both object and array forms at the same path', () => {
+      const json = {
+        items: [
+          { field2: { stuff: { only_object: 'v1' } } },
+          { field2: { stuff: [{ only_array: 'v2' }, { only_array: 'v3' }] } }
+        ]
+      };
+
+      const schema = discoverSchema(json);
+      const idGenerator = new IDGenerator();
+      const results = flattenJson(json, schema, idGenerator);
+
+      const stuffRows = results.find(r => r.tableName === 'items_field2_stuff')!.rows;
+      expect(stuffRows.length).toBe(3);
+      expect(stuffRows[0]).toMatchObject({ _pid: 1, only_object: 'v1' });
+      expect(stuffRows[1]).toMatchObject({ _pid: 2, only_array: 'v2' });
+      expect(stuffRows[2]).toMatchObject({ _pid: 2, only_array: 'v3' });
+    });
+
+    it('should keep scalar on parent row and emit child rows only for array/object values', () => {
+      const json = {
+        items: [
+          { field2: { stuff: 'scalar-value' } },
+          { field2: { stuff: [{ array_value: 'v2' }] } }
+        ]
+      };
+
+      const schema = discoverSchema(json);
+      const idGenerator = new IDGenerator();
+      const results = flattenJson(json, schema, idGenerator);
+
+      const parentRows = results.find(r => r.tableName === 'items_field2')!.rows;
+      expect(parentRows.length).toBe(2);
+      expect(parentRows[0]).toMatchObject({ _id: 1, _pid: 1, stuff: 'scalar-value' });
+      expect(parentRows[1]).toMatchObject({ _id: 2, _pid: 2, stuff: null });
+
+      const stuffRows = results.find(r => r.tableName === 'items_field2_stuff')!.rows;
+      expect(stuffRows.length).toBe(1);
+      expect(stuffRows[0]).toMatchObject({ _pid: 2, array_value: 'v2' });
+    });
+  });
+
   describe('deeply nested', () => {
     it('should handle 3+ levels of nesting', () => {
       const json = {

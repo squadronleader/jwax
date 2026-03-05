@@ -147,6 +147,47 @@ describe('discoverSchema', () => {
     });
   });
 
+  describe('polymorphic path shapes', () => {
+    it('should merge object and array observations into one child table schema', () => {
+      const json = {
+        items: [
+          { field2: { stuff: { only_object: 'v1' } } },
+          { field2: { stuff: [{ only_array: 'v2' }] } }
+        ]
+      };
+
+      const schema = discoverSchema(json);
+
+      const stuffTable = schema.tables.get('items_field2_stuff');
+      expect(stuffTable).toBeDefined();
+      expect(stuffTable?.parentTable).toBe('items_field2');
+      expect(stuffTable?.columns.map(c => c.name)).toEqual(
+        expect.arrayContaining(['_id', '_pid', 'only_object', 'only_array'])
+      );
+    });
+
+    it('should keep scalar value on parent table when scalar and array coexist at same path', () => {
+      const json = {
+        items: [
+          { field2: { stuff: 'scalar-value' } },
+          { field2: { stuff: [{ array_value: 'v2' }] } }
+        ]
+      };
+
+      const schema = discoverSchema(json);
+
+      const parentTable = schema.tables.get('items_field2');
+      expect(parentTable).toBeDefined();
+      expect(parentTable?.columns.map(c => c.name)).toContain('stuff');
+
+      const stuffTable = schema.tables.get('items_field2_stuff');
+      expect(stuffTable).toBeDefined();
+      expect(stuffTable?.columns.map(c => c.name)).toEqual(
+        expect.arrayContaining(['_id', '_pid', 'array_value'])
+      );
+    });
+  });
+
   describe('test fixtures', () => {
     it('should handle simple.json', () => {
       const json = JSON.parse(
