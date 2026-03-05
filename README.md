@@ -170,6 +170,13 @@ GROUP BY status
 4. **SQL Engine** - Creates in-memory SQLite tables
 5. **Query Execution** - Runs SQL queries using SQLite
 
+### Polymorphic Property Behavior
+
+When the same property path appears with mixed shapes across records, JWAX uses a split strategy:
+- If a path is an object/array in any record, JWAX creates/uses a child table for those object/array values.
+- If that same path is scalar in other records, the scalar value stays on the parent table column.
+- For rows where the value is normalized to the child table, the parent column is `NULL`.
+
 See [Advanced Features](docs/ADVANCED.md) for detailed pipeline explanation.
 
 ## Development
