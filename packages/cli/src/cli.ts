@@ -1,4 +1,4 @@
-import { QueryOrchestrator, loadJson, isUrl, FormatterType } from '@jwax/core';
+import { QueryOrchestrator, loadJson, isUrl, FormatterType, createFormatter } from '@jwax/core';
 import { PerformanceTimer } from '@jwax/core';
 import { ReadlineTerminal } from './terminal';
 import { SqlJsAdapter } from './sqljs-adapter';
@@ -143,9 +143,22 @@ export async function startNonInteractiveCli(
   try {
     // Execute query with de-normalization
     const results = orchestrator.executeQueryWithDenormalization(query);
-    
-    // Output as JSON (already an array of objects)
-    console.log(JSON.stringify(results, null, 2));
+    const outputFormat = options.outputFormat ?? 'table';
+
+    if (outputFormat === 'json') {
+      console.log(JSON.stringify(results, null, 2));
+    } else {
+      const resultObjects = results as Record<string, unknown>[];
+      const formatter = createFormatter('table');
+      const headers = Array.from(
+        resultObjects.reduce((set, row) => {
+          Object.keys(row).forEach((key) => set.add(key));
+          return set;
+        }, new Set<string>())
+      );
+      const rows = resultObjects.map((row) => headers.map((header) => row[header]));
+      console.log(formatter.format({ headers, rows }));
+    }
   } catch (err: any) {
     console.error('Error: Query execution failed:', err.message ?? err);
     process.exit(1);
