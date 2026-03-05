@@ -26,9 +26,10 @@ describe('discoverSchema', () => {
 
       // Check columns
       const columns = usersTable?.columns || [];
-      expect(columns.length).toBe(4); // _id, id, name, age
+      expect(columns.length).toBe(5); // _id, _json, id, name, age
       expect(columns[0].name).toBe('_id');
       expect(columns[0].primaryKey).toBe(true);
+      expect(columns.map(c => c.name)).toContain('_json');
     });
 
     it('should discover multiple top-level arrays', () => {
@@ -79,7 +80,7 @@ describe('discoverSchema', () => {
 
       // Users table
       const usersTable = schema.tables.get('users');
-      expect(usersTable?.columns.map(c => c.name)).toEqual(['_id', 'id', 'name']);
+      expect(usersTable?.columns.map(c => c.name)).toEqual(['_id', '_json', 'id', 'name']);
 
       // Address table
       const addressTable = schema.tables.get('users_address');
@@ -94,6 +95,7 @@ describe('discoverSchema', () => {
       expect(addressColumns).toContain('_pid');
       expect(addressColumns).toContain('city');
       expect(addressColumns).toContain('zip');
+      expect(addressColumns).not.toContain('_json');
     });
 
     it('should handle deeply nested objects', () => {
@@ -291,8 +293,9 @@ describe('discoverSchema', () => {
       
       // Check columns - should have _id plus the object fields
       const columns = companyTable?.columns || [];
-      expect(columns.length).toBe(5); // _id, id, name, founded, employees
+      expect(columns.length).toBe(6); // _id, _json, id, name, founded, employees
       expect(columns[0].name).toBe('_id');
+      expect(columns.map(c => c.name)).toContain('_json');
       expect(columns.map(c => c.name)).toContain('id');
       expect(columns.map(c => c.name)).toContain('name');
       expect(columns.map(c => c.name)).toContain('founded');

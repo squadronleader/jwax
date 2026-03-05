@@ -24,10 +24,10 @@ describe('QueryOrchestrator', () => {
 
       const result = orchestrator.executeQuery('SELECT * FROM users ORDER BY id');
       
-      expect(result.headers).toEqual(['_id', 'id', 'name', 'age']);
+      expect(result.headers).toEqual(['_id', '_json', 'id', 'name', 'age']);
       expect(result.rows).toHaveLength(2);
-      expect(result.rows[0]).toEqual([1, 1, 'Alice', 30]);
-      expect(result.rows[1]).toEqual([2, 2, 'Bob', 25]);
+      expect(result.rows[0]).toEqual([1, '{"id":1,"name":"Alice","age":30}', 1, 'Alice', 30]);
+      expect(result.rows[1]).toEqual([2, '{"id":2,"name":"Bob","age":25}', 2, 'Bob', 25]);
     });
 
     it('should support WHERE clauses', () => {
@@ -44,6 +44,24 @@ describe('QueryOrchestrator', () => {
       
       expect(result.rows).toHaveLength(1);
       expect(result.rows[0]).toEqual(['Alice']);
+    });
+
+    it('should support hybrid querying via _json', () => {
+      const json = {
+        events: [
+          { id: 1, type: 'purchase', metadata: { device: { os: 'ios' } } },
+          { id: 2, type: 'view', metadata: { device: { os: 'android' } } }
+        ]
+      };
+
+      orchestrator.loadJson(json);
+
+      const result = orchestrator.executeQuery(
+        "SELECT id, json_extract(_json, '$.metadata.device.os') AS device_os FROM events WHERE type = 'purchase'"
+      );
+
+      expect(result.headers).toEqual(['id', 'device_os']);
+      expect(result.rows).toEqual([[1, 'ios']]);
     });
 
     it('should support ORDER BY', () => {
@@ -338,7 +356,7 @@ describe('QueryOrchestrator', () => {
       orchestrator.loadJson(json);
 
       const result = orchestrator.executeQuery('SELECT * FROM users');
-      expect(result.rows[0][2]).toBe(null); // name column
+      expect(result.rows[0][3]).toBe(null); // name column
     });
   });
 });

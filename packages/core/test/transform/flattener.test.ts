@@ -24,6 +24,7 @@ describe('flattenJson', () => {
       
       expect(usersResult!.rows[0]).toEqual({
         _id: 1,
+        _json: '{"id":1,"name":"Alice","age":30}',
         id: 1,
         name: 'Alice',
         age: 30
@@ -31,6 +32,7 @@ describe('flattenJson', () => {
 
       expect(usersResult!.rows[1]).toEqual({
         _id: 2,
+        _json: '{"id":2,"name":"Bob","age":25}',
         id: 2,
         name: 'Bob',
         age: 25
@@ -99,6 +101,7 @@ describe('flattenJson', () => {
       expect(usersResult!.rows.length).toBe(2);
       expect(usersResult!.rows[0]).toEqual({
         _id: 1,
+        _json: '{"id":1,"name":"Alice","address":{"city":"NYC","zip":"10001"}}',
         id: 1,
         name: 'Alice'
       });
@@ -324,6 +327,7 @@ describe('flattenJson', () => {
       
       expect(companyResult!.rows[0]).toEqual({
         _id: 1,
+        _json: '{"id":"comp-001","name":"TechVenture","founded":"2015-03-15","employees":450}',
         id: 'comp-001',
         name: 'TechVenture',
         founded: '2015-03-15',

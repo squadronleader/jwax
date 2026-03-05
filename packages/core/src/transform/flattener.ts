@@ -49,6 +49,8 @@ function processTable(
   tableRows: Map<string, Record<string, any>[]>,
   parentId: number | null
 ): void {
+  const isRootTable = !table.parentTable;
+
   // Navigate to the array using ORIGINAL path (before sanitization)
   let current: any = root;
   for (const segment of table.originalPath) {
@@ -98,6 +100,13 @@ function processTable(
     for (const column of table.columns) {
       // Skip synthetic columns (already handled)
       if (column.name === table.primaryKey || column.name === table.parentKey) {
+        continue;
+      }
+
+      if (column.name === '_json') {
+        if (isRootTable) {
+          row._json = JSON.stringify(item);
+        }
         continue;
       }
 

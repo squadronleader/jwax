@@ -29,7 +29,10 @@ export function discoverSchema(root: any, options: DiscoverOptions = {}): Schema
     const hasScalars = Object.values(root).some(v => v === null || typeof v !== 'object');
     if (hasScalars) {
       const columns = inferColumnTypes([root], { strictSchema: options.strictSchema });
-      const allColumns: ColumnDef[] = [{ name: '_id', type: 'INTEGER', primaryKey: true }];
+      const allColumns: ColumnDef[] = [
+        { name: '_id', type: 'INTEGER', primaryKey: true },
+        { name: '_json', type: 'TEXT' }
+      ];
       for (const [originalName, column] of columns) {
         allColumns.push({ ...column, originalName });
       }
@@ -153,6 +156,8 @@ function walkJson(
     // Add parent foreign key if nested
     if (parentTable) {
       allColumns.push({ name: '_pid', type: 'INTEGER' });
+    } else {
+      allColumns.push({ name: '_json', type: 'TEXT' });
     }
 
     // Add discovered columns with originalName tracking

@@ -23,7 +23,7 @@ describe('Invalid table names integration', () => {
     const result = orchestrator.executeQuery('SELECT * FROM user_list');
     
     expect(result.rows).toHaveLength(2);
-    expect(result.rows[0][2]).toBe('Alice'); // rows are arrays, not objects
+    expect(result.rows[0][3]).toBe('Alice'); // rows are arrays, not objects
   });
 
   it('should handle JSON keys with dots', () => {
