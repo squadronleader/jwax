@@ -4,26 +4,48 @@
 
 <div align="center">
 
-# The missing JSON to SQL tool
+# The missing JSON to SQL query tool
 
 </div>
 
-Query JSON files with SQL from your terminal.
+**Query JSON files and data with SQL from your terminal.**
 
-## Changelog
+Don't bother learning bespoke query languages.  
+Just load your JSON and query it with the SQL you already know.
 
-See [change.md](https://github.com/squadronleader/jwax/blob/main/change.md) for release notes.
+## Try it out
+```bash
+npx @squadronleader/jwax data.json --query "SELECT * FROM users LIMIT 5"
+```
 
 ## Install
 
 ```bash
+# Install
 npm install -g @squadronleader/jwax
+
+# Start interactive query session
+jwax data.json
+
+# Run a query directly
+jwax data.json --query "SELECT * FROM users LIMIT 5"
 ```
 
-## Usage
+## Example
 
+File: data.json
+```json
+{
+  "users": [
+    { "id": 1, "name": "Alice", "status": "active" },
+    { "id": 2, "name": "Bob", "status": "inactive" }
+  ]
+}
+```
+
+Execute:
 ```bash
-jwax --query "SELECT * FROM users LIMIT 5" data.json
+jwax data.json --query "SELECT name FROM users WHERE status='active'"
 ```
 
 Output:
@@ -32,22 +54,27 @@ Output:
 │ id  │ name │ status │
 ├─────┼──────┼────────┤
 │ 1   │ Alice│ active │
-│ 2   │ Bob  │ active │
 └─────┴──────┴────────┘
 ```
 
 ## Features
 
-- **Load any JSON file, URL, or stdin** - Automatically discovers tables from JSON arrays
+- **Load any JSON file, URL, or stdin** - Automatically normalizes JSON into related tables
+- **Performant** - Can handle very large and complex JSON structures with ease
 - **Interactive REPL** - Query with `jwax>` prompt and smart autocomplete
 - **Multiline Input Mode** - Write queries across multiple lines with `:ml` toggle
 - **Full SQL Support** - SELECT, WHERE, ORDER BY, GROUP BY, JOIN, aggregations, subqueries
-- **Automatic Schema Discovery** - Arrays become tables, nested objects become related tables
+- **Auto-magic Schema Discovery** - Arrays become tables, nested objects become related tables
 - **Smart Name Handling** - Automatically sanitizes JSON keys to valid SQL names
-- **Two Schema Modes** - Lenient (default) for flexible data, strict for validation
-- **ASCII Table Output** - Pretty-printed results
+- **Two Schema Modes** - Lenient (default) handles inconsistent JSON structures
+- **ASCII Table Output** - For Pretty-printed results
+- **Multiple Output Formats** - Can select to format results in both table and json format
 - **Unix Pipeline Friendly** - Pipe JSON data from other CLI tools
 - **VS Code Extension** - (Coming soon) Query JSON files directly from your editor via the command palette
+
+## Changelog
+
+See [change.md](https://github.com/squadronleader/jwax/blob/main/packages/cli/change.md) for release notes.
 
 ## Documentation
 
@@ -75,9 +102,7 @@ jwax [OPTIONS] [source]
 | `--strict-schema` | Enable strict schema validation with NOT NULL constraints on always-present fields | `jwax --strict-schema data.json` |
 | `--timeout <seconds>` | Set timeout for loading JSON from URLs (default: 5 seconds) | `jwax --timeout 10 https://example.com/data.json` |
 | `--output-format <format>` | Set output format for query results in interactive mode (table or json) | `jwax --output-format json data.json` |
-| `--engine <mode>` | Select SQL engine mode (`auto`, `native`, `wasm`) | `jwax --engine wasm data.json` |
-
-`auto` (default) tries native SQLite first and silently falls back to `wasm` when native is unavailable.
+| `--engine <mode>` | Select SQL engine mode (`auto`, `native`, `wasm`), Native is fastest but requires native sql binding, WASM fallback for maximum compatibility | `jwax --engine wasm data.json` |ß
 
 ## Interactive Mode
 
@@ -203,16 +228,16 @@ When piping data, you **must** provide the `--query` flag:
 
 ```bash
 # Pipe from curl
-curl https://api.example.com/users | jwax --query "SELECT * FROM data"
+curl https://api.example.com/users | jwax --query "SELECT * FROM root"
 
 # Pipe from cat
 cat data.json | jwax --query "SELECT name FROM data WHERE age > 25"
 
 # Chain with other tools
-echo '[{"id": 1, "name": "Alice"}]' | jwax --query "SELECT * FROM data"
+echo '[{"id": 1, "name": "Alice"}]' | jwax --query "SELECT * FROM root"
 
 # Explicit stdin with -
-jwax - --query "SELECT * FROM data" < input.json
+jwax - --query "SELECT * FROM root" < input.json
 
 # Custom table name for piped data
 curl https://api.example.com/users | jwax --table-name users --query "SELECT COUNT(*) FROM users"
@@ -232,6 +257,4 @@ curl https://api.example.com/users | jwax --interactive
 
 
 
-
-
-
+Keywords: json, sql, json-query, jq-alternative, cli-tool, sqlite, json-to-sql, search, filter, jq, parse, parsing
