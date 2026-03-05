@@ -10,6 +10,7 @@ import { deNormalizeWithNesting } from './denormalizer';
 
 export interface OrchestratorOptions {
   strictSchema?: boolean;
+  includeJsonColumn?: boolean;
 }
 
 export class QueryOrchestrator {
@@ -37,7 +38,10 @@ export class QueryOrchestrator {
     this.loaded = false;
 
     // Step 1: Discover schema
-    this.schema = discoverSchema(root, { strictSchema: this.options.strictSchema });
+    this.schema = discoverSchema(root, {
+      strictSchema: this.options.strictSchema,
+      includeJsonColumn: this.options.includeJsonColumn
+    });
 
     if (this.schema.tables.size === 0) {
       // No tables to create
@@ -52,7 +56,9 @@ export class QueryOrchestrator {
 
     // Step 3: Transform JSON into rows
     const idGenerator = new IDGenerator();
-    const flattenedData = flattenJson(root, this.schema, idGenerator);
+    const flattenedData = flattenJson(root, this.schema, idGenerator, {
+      includeJsonColumn: this.options.includeJsonColumn
+    });
 
     // Step 4: Insert rows (in dependency order - parents before children)
     const insertedTables = new Set<string>();

@@ -83,5 +83,11 @@ describe('CLI Entry Points', () => {
       expect(engineOption).toBeDefined();
       expect(engineOption?.description).toContain('Engine mode');
     });
+
+    it('--include-json-column flag should exist with -ijc shorthand', () => {
+      const jsonOption = CLI_OPTIONS.find(opt => opt.flags.includes('--include-json-column'));
+      expect(jsonOption).toBeDefined();
+      expect(jsonOption?.flags).toContain('-ijc');
+    });
   });
 });

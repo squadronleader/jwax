@@ -35,6 +35,7 @@
 - **ASCII Table Output** - Pretty-printed results
 - **Unix Pipeline Friendly** - Pipe JSON data from other CLI tools
 - **VS Code Extension** - Query JSON files directly from your editor via the command palette
+- **Optional Hybrid JSON Column** - Enable `_json` on root tables with `--include-json-column` for SQLite JSON operators
 
 ## Installation
 
@@ -83,6 +84,23 @@ jwax> :quit
 
 ```bash
 jwax data.json --query "SELECT * FROM users LIMIT 5"
+```
+
+### Optional `_json` Column for JSON Operators
+
+By default, `_json` is disabled to keep `SELECT *` output clean.  
+Enable it when needed:
+
+```bash
+jwax --include-json-column data.json
+```
+
+Then query nested values directly with SQLite JSON operators:
+
+```sql
+SELECT id, _json ->> '$.metadata.device.os' AS device_os
+FROM events
+WHERE type = 'purchase';
 ```
 
 ### Load from URL

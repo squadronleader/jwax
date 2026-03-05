@@ -12,10 +12,15 @@ export interface FlattenResult {
   rows: Record<string, any>[];
 }
 
+export interface FlattenOptions {
+  includeJsonColumn?: boolean;
+}
+
 export function flattenJson(
   root: any,
   schema: SchemaMap,
-  idGenerator: IDGenerator
+  idGenerator: IDGenerator,
+  options: FlattenOptions = {}
 ): FlattenResult[] {
   const results: FlattenResult[] = [];
   const tableRows = new Map<string, Record<string, any>[]>();
@@ -29,7 +34,7 @@ export function flattenJson(
   for (const tableName of schema.rootTables) {
     const table = schema.tables.get(tableName);
     if (table) {
-      processTable(root, table, schema, idGenerator, tableRows, null);
+      processTable(root, table, schema, idGenerator, tableRows, null, options);
     }
   }
 
@@ -47,7 +52,8 @@ function processTable(
   schema: SchemaMap,
   idGenerator: IDGenerator,
   tableRows: Map<string, Record<string, any>[]>,
-  parentId: number | null
+  parentId: number | null,
+  options: FlattenOptions
 ): void {
   const isRootTable = !table.parentTable;
 
@@ -104,7 +110,7 @@ function processTable(
       }
 
       if (column.name === '_json') {
-        if (isRootTable) {
+        if (isRootTable && options.includeJsonColumn) {
           row._json = JSON.stringify(item);
         }
         continue;
@@ -154,7 +160,7 @@ function processTable(
             current[lastSegment] = Array.isArray(nestedValue) ? nestedValue : [nestedValue];
 
             // Process the child table with this row as parent
-            processTable(syntheticRoot, childTable, schema, idGenerator, tableRows, rowId);
+            processTable(syntheticRoot, childTable, schema, idGenerator, tableRows, rowId, options);
           }
         }
       }

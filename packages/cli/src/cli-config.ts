@@ -46,4 +46,8 @@ export const CLI_OPTIONS: CliOptionConfig[] = [
     description: 'Engine mode (auto, native, wasm)',
     defaultValue: 'auto',
   },
+  {
+    flags: '-ijc, --include-json-column',
+    description: 'Include _json column on root tables for SQLite JSON operator queries',
+  },
 ];

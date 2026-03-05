@@ -35,6 +35,7 @@ const opts = program.opts<{
   interactive?: boolean;
   rootName?: string;
   timing?: boolean;
+  includeJsonColumn?: boolean;
 }>();
 
 // Detect stdin: no source provided and stdin is not a TTY, or explicit '-'
@@ -66,6 +67,7 @@ const cliOptions = {
   engine: (opts.engine || 'auto') as 'auto' | 'native' | 'wasm',
   tableName: opts.rootName,
   showTiming: opts.timing,
+  includeJsonColumn: opts.includeJsonColumn,
 };
 
 // Handle stdin mode selection

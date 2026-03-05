@@ -7,6 +7,7 @@ type EngineMode = 'auto' | 'native' | 'wasm';
 
 export interface CliOptions {
   strictSchema?: boolean;
+  includeJsonColumn?: boolean;
   timeoutMs?: number;
   outputFormat?: FormatterType;
   tableName?: string;
@@ -15,21 +16,26 @@ export interface CliOptions {
 }
 
 async function createOrchestrator(options: CliOptions): Promise<{ orchestrator: QueryOrchestrator; engineName: 'native' | 'wasm' }> {
+  const orchestratorOptions = {
+    strictSchema: options.strictSchema,
+    ...(options.includeJsonColumn ? { includeJsonColumn: true } : {})
+  } as any;
+
   const engineMode = options.engine ?? 'auto';
   if (engineMode === 'wasm') {
     const adapter = await SqlJsAdapter.create();
-    return { orchestrator: new QueryOrchestrator(adapter, { strictSchema: options.strictSchema }), engineName: 'wasm' };
+    return { orchestrator: new QueryOrchestrator(adapter, orchestratorOptions), engineName: 'wasm' };
   }
 
   if (engineMode === 'native') {
-    return { orchestrator: new QueryOrchestrator('sqlite', { strictSchema: options.strictSchema }), engineName: 'native' };
+    return { orchestrator: new QueryOrchestrator('sqlite', orchestratorOptions), engineName: 'native' };
   }
 
   try {
-    return { orchestrator: new QueryOrchestrator('sqlite', { strictSchema: options.strictSchema }), engineName: 'native' };
+    return { orchestrator: new QueryOrchestrator('sqlite', orchestratorOptions), engineName: 'native' };
   } catch {
     const adapter = await SqlJsAdapter.create();
-    return { orchestrator: new QueryOrchestrator(adapter, { strictSchema: options.strictSchema }), engineName: 'wasm' };
+    return { orchestrator: new QueryOrchestrator(adapter, orchestratorOptions), engineName: 'wasm' };
   }
 }
 
