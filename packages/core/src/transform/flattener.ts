@@ -87,6 +87,13 @@ function processTable(
       row[table.parentKey] = parentId;
     }
 
+    const childPathKeys = new Set(
+      Array.from(schema.tables.values())
+        .filter(childTable => childTable.parentTable === table.name)
+        .map(childTable => childTable.originalPath[table.originalPath.length])
+        .filter((key): key is string => Boolean(key))
+    );
+
     // Add data columns
     for (const column of table.columns) {
       // Skip synthetic columns (already handled)
@@ -97,6 +104,11 @@ function processTable(
       // Get value from item using original column name
       const originalColumnName = column.originalName || column.name;
       const value = item[originalColumnName];
+
+      if (childPathKeys.has(originalColumnName) && value !== null && typeof value === 'object') {
+        row[column.name] = null;
+        continue;
+      }
 
       // Coerce to target type
       const coercedValue = coerceValue(value, column.type);
