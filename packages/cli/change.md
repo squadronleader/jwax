@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.1.1.0 (2026-03-05)
+
+Changes since `v1.1.0.0`:
+
+### Bugfixes
+- Fixed non-interactive `--output-format` handling so `table` output is rendered as a table and `json` output remains JSON.
+- Fixed issue where properties with polymorphic shapes where not handled correctly. These are now handled consistently. See appended note in readme for more details
+
 ## v1.1.0.0 (2026-03-04)
 
 Changes since `v1.0.0.0`:
@@ -26,4 +34,3 @@ Changes since `v1.0.0.0`:
 - **ASCII Table Output** - Pretty-printed results
 - **Unix Pipeline Friendly** - Pipe JSON data from other CLI tools
 - **VS Code Extension** - Query JSON files directly from your editor via the command palette
-
