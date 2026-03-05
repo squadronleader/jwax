@@ -81,6 +81,8 @@ Options:
   -t, --timeout <sec>   URL fetch timeout in seconds (default: 5)
   -i, --interactive     Force interactive mode with piped input
   -e, --engine <mode>   Engine mode: auto (default), native, wasm
+  -ijc, --include-json-column
+                         Include _json column on root tables (default: off)
   --root-name <name>    Override the default root table name (default: root)
   --strict-schema       Enable strict schema validation
   --output-format <fmt> Output format: table (default) or json
@@ -89,6 +91,14 @@ Options:
 ```
 
 `auto` mode tries native SQLite first and silently falls back to `wasm` if native is unavailable.
+
+### Hybrid JSON Querying (Optional)
+
+Use `--include-json-column` (or `-ijc`) to add `_json` on root tables and query nested fields with native SQLite JSON operators:
+
+```bash
+jwax -ijc events.json --query "SELECT id, _json ->> '$.metadata.device.os' AS device_os FROM events"
+```
 
 ## Input Sources
 

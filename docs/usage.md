@@ -24,6 +24,7 @@ jwax [OPTIONS] [source]
 | `--timeout <seconds>` | Set timeout for loading JSON from URLs (default: 5 seconds) | `jwax --timeout 10 https://example.com/data.json` |
 | `--output-format <format>` | Set output format for query results in interactive mode (table or json) | `jwax --output-format json data.json` |
 | `--engine <mode>` | Select SQL engine mode (`auto`, `native`, `wasm`) | `jwax --engine wasm data.json` |
+| `-ijc, --include-json-column` | Include `_json` column on root tables (disabled by default) for SQLite JSON operators | `jwax -ijc events.json` |
 
 `auto` (default) tries native SQLite first and silently falls back to `wasm` when native is unavailable.
 
@@ -43,6 +44,21 @@ jwax --output-format json data.json
 
 # All options together
 jwax --strict-schema --timeout 10 --output-format json --query "SELECT * FROM items" https://api.example.com/data.json
+```
+
+### Optional `_json` Column (Hybrid JSON Querying)
+
+You can enable `_json` column. This is a special column added to only parent tables (tables that have no parent). This will include a raw copy of the json object that represents that object. This can then be used to query the json structure directly. This can be handy if you want select random deep bits of info without explicitly having write joins. By default, `_json` is disabled so `SELECT *` on root tables stays compact.  
+Enable it only when you want direct nested access with SQLite JSON operators:
+
+```bash
+jwax --include-json-column events.json
+```
+
+```sql
+SELECT id, _json ->> '$.metadata.device.os' AS device_os
+FROM events
+WHERE type = 'purchase';
 ```
 
 ## Interactive Mode
