@@ -79,7 +79,7 @@ SELECT name, email FROM users;
 -- Join nested data
 SELECT u.name, a.city 
 FROM users u 
-JOIN users_address a ON u._id = a._parent_id;
+JOIN u_address a ON u._id = a._parent_id;
 
 -- Aggregations
 SELECT COUNT(*) as total_users FROM users;

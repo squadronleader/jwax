@@ -190,7 +190,7 @@ jwax> :tables
 
 Available tables:
   - users
-  - users_address
+  - u_address
   - orders
 ```
 
@@ -381,7 +381,7 @@ When your JSON has nested objects, jwax creates related tables with foreign keys
    - `_id` (1, 2, 3...)
    - `id`, `name`
 
-2. **`users_address`** table:
+2. **`u_address`** table:
    - `_id` (1, 2, 3...)
    - `_pid` (links to users._id)
    - `city`, `zip`
@@ -395,14 +395,14 @@ SELECT
   a.city,
   a.zip
 FROM users u
-JOIN users_address a ON u._id = a._pid
+JOIN u_address a ON u._id = a._pid
 ```
 
 **JOIN with WHERE:**
 ```sql
 SELECT u.name, a.city
 FROM users u
-JOIN users_address a ON u._id = a._pid
+JOIN u_address a ON u._id = a._pid
 WHERE a.city = 'New York'
 ```
 
@@ -429,8 +429,8 @@ WHERE a.city = 'New York'
 
 **Creates Three Tables:**
 - `company`
-- `company_departments`
-- `company_departments_employees`
+- `c_departments`
+- `cd_employees`
 
 **Query all three levels:**
 ```sql
@@ -440,8 +440,8 @@ SELECT
   e.name as employee,
   e.role
 FROM company c
-JOIN company_departments d ON c._id = d._pid
-JOIN company_departments_employees e ON d._id = e._pid
+JOIN c_departments d ON c._id = d._pid
+JOIN cd_employees e ON d._id = e._pid
 ```
 
 ## Advanced Queries
@@ -557,7 +557,7 @@ ORDER BY count DESC
 -- Users per city
 SELECT a.city, COUNT(*) as user_count
 FROM users u
-JOIN users_address a ON u._id = a._pid
+JOIN u_address a ON u._id = a._pid
 GROUP BY a.city
 ```
 
@@ -572,7 +572,7 @@ WHERE status = 'completed'
 -- Average age of users in NYC
 SELECT AVG(u.age) as avg_age
 FROM users u
-JOIN users_address a ON u._id = a._pid
+JOIN u_address a ON u._id = a._pid
 WHERE a.city = 'New York'
 ```
 
@@ -612,7 +612,7 @@ GROUP BY email
 HAVING COUNT(*) > 1
 
 -- Get unique values
-SELECT DISTINCT city FROM users_address
+SELECT DISTINCT city FROM u_address
 ```
 
 ## Tips and Best Practices
@@ -633,12 +633,12 @@ Makes queries more readable:
 -- Good
 SELECT u.name, a.city
 FROM users u
-JOIN users_address a ON u._id = a._pid
+JOIN u_address a ON u._id = a._pid
 
 -- Less readable
-SELECT users.name, users_address.city
+SELECT users.name, u_address.city
 FROM users
-JOIN users_address ON users._id = users_address._pid
+JOIN u_address ON users._id = u_address._pid
 ```
 
 ### 3. Test Incrementally
@@ -653,7 +653,7 @@ SELECT * FROM users WHERE age > 25
 
 -- Step 3: Add join
 SELECT u.*, a.city FROM users u
-JOIN users_address a ON u._id = a._pid
+JOIN u_address a ON u._id = a._pid
 WHERE u.age > 25
 ```
 
@@ -694,7 +694,7 @@ JSON keys are automatically sanitized:
 - Table names are lowercase
 - Special characters are replaced with underscores (e.g., `"user-list"` → `user_list`)
 - Names starting with numbers are prefixed with `_` (e.g., `"2024data"` → `_2024data`)
-- Nested objects create new tables with underscore separators (e.g., `users.address` → `users_address`)
+- Nested objects create new tables using parent initials + current field (e.g., `users.address` → `u_address`)
 
 **Example:**
 ```
@@ -803,7 +803,7 @@ LEFT JOIN child_table c ON p._id = c._pid
 ║  JOINS (for nested data)                                  ║
 ║  SELECT p.*, c.*                                          ║
 ║  FROM parent p                                            ║
-║  JOIN parent_child c ON p._id = c._pid                    ║
+║  JOIN p_child c ON p._id = c._pid                         ║
 ╠═══════════════════════════════════════════════════════════╣
 ║  AGGREGATIONS                                             ║
 ║  SELECT COUNT(*), SUM(col), AVG(col) FROM table           ║

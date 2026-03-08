@@ -177,10 +177,10 @@ describe('Invalid table names integration', () => {
     
     const tables = orchestrator.listTables();
     expect(tables).toContain('user_list');
-    expect(tables).toContain('user_list_contact_info');
+    expect(tables).toContain('u_contact_info');
     
     const result = orchestrator.executeQuery(
-      'SELECT u.name, c.email FROM user_list u JOIN user_list_contact_info c ON u._id = c._pid'
+      'SELECT u.name, c.email FROM user_list u JOIN u_contact_info c ON u._id = c._pid'
     );
     expect(result.rows).toHaveLength(1);
     expect(result.rows[0][0]).toBe('Alice'); // rows are arrays: [name, email]
@@ -226,7 +226,7 @@ describe('Invalid table names integration', () => {
     
     const tables = orchestrator.listTables();
     expect(tables).toContain('api_v1_users');
-    expect(tables).toContain('api_v1_users_meta_data');
+    expect(tables).toContain('a_meta_data');
     expect(tables).toContain('_2024_orders');
     expect(tables).toContain('data_archived');
     

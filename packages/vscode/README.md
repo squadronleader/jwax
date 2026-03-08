@@ -25,7 +25,7 @@ Open any JSON file in VS Code, then use the Command Palette to run SQL queries a
 ### JSON to SQL Mapping
 
 - **Top-level arrays** become database tables
-- **Nested objects** become related tables (e.g., `users_address`)
+- **Nested objects** become related tables (e.g., `u_address`)
 - **Synthetic IDs** — All tables get `_id` primary key and nested tables get `_parent_id` foreign key
 
 ### Example
@@ -43,7 +43,7 @@ You can query:
 ```sql
 SELECT u.name, a.city
 FROM users u
-JOIN users_address a ON u._id = a._parent_id
+JOIN u_address a ON u._id = a._parent_id
 ```
 
 ## Requirements

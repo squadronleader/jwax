@@ -172,7 +172,7 @@ SELECT name, age FROM users WHERE age > 25 ORDER BY age DESC
 -- Join nested objects
 SELECT u.name, a.city 
 FROM users u 
-JOIN users_address a ON u._id = a._pid
+JOIN u_address a ON u._id = a._pid
 
 -- Aggregations
 SELECT status, COUNT(*) as count, SUM(total) as revenue 

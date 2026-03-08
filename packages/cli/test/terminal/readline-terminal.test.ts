@@ -285,12 +285,12 @@ describe('ReadlineTerminal', () => {
 
     it('should fall back to table leaf names when originalPath metadata is missing', () => {
       const mockedSchema = {
-        rootTables: ['data_clients'],
+        rootTables: ['d_clients'],
         tables: new Map([
-          ['data_clients', { name: 'data_clients', parentTable: undefined, originalPath: ['data', 'clients'], columns: [] }],
-          ['data_clients_accounts', { name: 'data_clients_accounts', parentTable: 'data_clients', originalPath: [], columns: [] }],
-          ['data_clients_orders', { name: 'data_clients_orders', parentTable: 'data_clients', originalPath: ['data', 'clients', 'orders'], columns: [] }],
-          ['data_clients_orders_items', { name: 'data_clients_orders_items', parentTable: 'data_clients_orders', originalPath: [], columns: [] }],
+          ['d_clients', { name: 'd_clients', parentTable: undefined, originalPath: ['data', 'clients'], columns: [] }],
+          ['dc_accounts', { name: 'dc_accounts', parentTable: 'd_clients', originalPath: [], columns: [] }],
+          ['dc_orders', { name: 'dc_orders', parentTable: 'd_clients', originalPath: ['data', 'clients', 'orders'], columns: [] }],
+          ['dco_items', { name: 'dco_items', parentTable: 'dc_orders', originalPath: [], columns: [] }],
         ])
       };
       const schemaSpy = jest.spyOn(orchestrator, 'getSchema').mockReturnValue(mockedSchema as any);
@@ -303,7 +303,7 @@ describe('ReadlineTerminal', () => {
       expect(output).toContain('├─ accounts');
       expect(output).toContain('└─ orders');
       expect(output).toContain('   └─ items');
-      expect(output).not.toContain('data_clients_accounts');
+      expect(output).not.toContain('dc_accounts');
 
       schemaSpy.mockRestore();
       consoleSpy.mockRestore();

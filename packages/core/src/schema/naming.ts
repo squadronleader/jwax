@@ -8,10 +8,17 @@ export function pathToTableName(path: string[]): string {
     throw new Error('Path cannot be empty');
   }
 
-  // Join with underscore and sanitize
-  return path
-    .map(segment => sanitizeIdentifier(segment))
-    .join('_');
+  const sanitizedPath = path.map(segment => sanitizeIdentifier(segment));
+  if (sanitizedPath.length === 1) {
+    return sanitizedPath[0];
+  }
+
+  const parentInitials = sanitizedPath
+    .slice(0, -1)
+    .map(segment => segment[0] ?? '')
+    .join('');
+
+  return `${parentInitials}_${sanitizedPath[sanitizedPath.length - 1]}`;
 }
 
 export function sanitizeIdentifier(str: string): string {
