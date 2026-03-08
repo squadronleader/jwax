@@ -46,6 +46,26 @@ describe('QueryOrchestrator', () => {
       expect(result.rows[0]).toEqual(['Alice']);
     });
 
+    it('should support hybrid querying via _json', () => {
+      const json = {
+        events: [
+          { id: 1, type: 'purchase', metadata: { device: { os: 'ios' } } },
+          { id: 2, type: 'view', metadata: { device: { os: 'android' } } }
+        ]
+      };
+
+      const jsonOrchestrator = new QueryOrchestrator('sqlite', { includeJsonColumn: true });
+      jsonOrchestrator.loadJson(json);
+
+      const result = jsonOrchestrator.executeQuery(
+        "SELECT id, json_extract(_json, '$.metadata.device.os') AS device_os FROM events WHERE type = 'purchase'"
+      );
+
+      expect(result.headers).toEqual(['id', 'device_os']);
+      expect(result.rows).toEqual([[1, 'ios']]);
+      jsonOrchestrator.close();
+    });
+
     it('should support ORDER BY', () => {
       const json = {
         users: [

@@ -49,6 +49,7 @@ const cliOptions = {
   engine: opts.engine || 'auto',
   tableName: opts.tableName,
   showTiming: opts.timing,
+  includeJsonColumn: opts.includeJsonColumn,
 };
 
 if (isStdinInput) {

@@ -55,6 +55,19 @@ describe('discoverSchema', () => {
       const usersTable = schema.tables.get('users');
       expect(usersTable?.columns.length).toBe(0); // No columns for empty array
     });
+
+    it('should include _json on root tables when includeJsonColumn is enabled', () => {
+      const json = {
+        users: [{ id: 1, name: 'Alice', profile: { city: 'NYC' } }]
+      };
+
+      const schema = discoverSchema(json, { includeJsonColumn: true });
+      const usersTable = schema.tables.get('users');
+      const profileTable = schema.tables.get('users_profile');
+
+      expect(usersTable?.columns.map(c => c.name)).toContain('_json');
+      expect(profileTable?.columns.map(c => c.name)).not.toContain('_json');
+    });
   });
 
   describe('nested objects', () => {

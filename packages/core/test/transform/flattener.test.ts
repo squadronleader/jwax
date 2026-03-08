@@ -63,6 +63,22 @@ describe('flattenJson', () => {
 
       expect(results[0].rows[0].name).toBe(null);
     });
+
+    it('should populate _json when includeJsonColumn is enabled', () => {
+      const json = {
+        users: [
+          { id: 1, name: 'Alice', metadata: { device: { os: 'ios' } } }
+        ]
+      };
+
+      const schema = discoverSchema(json, { includeJsonColumn: true });
+      const idGenerator = new IDGenerator();
+      const results = flattenJson(json, schema, idGenerator, { includeJsonColumn: true });
+      const usersResult = results.find(r => r.tableName === 'users');
+
+      expect(usersResult).toBeDefined();
+      expect(usersResult!.rows[0]._json).toBe('{"id":1,"name":"Alice","metadata":{"device":{"os":"ios"}}}');
+    });
   });
 
   describe('nested objects', () => {

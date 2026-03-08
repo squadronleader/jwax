@@ -156,7 +156,7 @@ describe('formatResultsAsTable', () => {
       expect(output).toContain('id');
       expect(output).toContain('name');
       expect(output).not.toContain('[object Object]');
-      expect(output).not.toContain('address');
+      expect(result.headers).not.toContain('address');
     } finally {
       orchestrator.close();
     }

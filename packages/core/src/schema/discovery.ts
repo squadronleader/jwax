@@ -10,6 +10,7 @@ import { ColumnDef } from '../engine/types';
 
 export interface DiscoverOptions {
   strictSchema?: boolean;
+  includeJsonColumn?: boolean;
 }
 
 export function discoverSchema(root: any, options: DiscoverOptions = {}): SchemaMap {
@@ -30,6 +31,9 @@ export function discoverSchema(root: any, options: DiscoverOptions = {}): Schema
     if (hasScalars) {
       const columns = inferColumnTypes([root], { strictSchema: options.strictSchema });
       const allColumns: ColumnDef[] = [{ name: '_id', type: 'INTEGER', primaryKey: true }];
+      if (options.includeJsonColumn) {
+        allColumns.push({ name: '_json', type: 'TEXT' });
+      }
       for (const [originalName, column] of columns) {
         allColumns.push({ ...column, originalName });
       }
@@ -153,6 +157,8 @@ function walkJson(
     // Add parent foreign key if nested
     if (parentTable) {
       allColumns.push({ name: '_pid', type: 'INTEGER' });
+    } else if (options.includeJsonColumn) {
+      allColumns.push({ name: '_json', type: 'TEXT' });
     }
 
     // Add discovered columns with originalName tracking

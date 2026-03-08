@@ -2,6 +2,7 @@
   "users": [
     {
       "id": 1,
+      "json" : "{ \"data\": { \"os\": \"apple\" } }",
       "name": "Alice",
       "age": 30,
       "email": "alice@example.com",
@@ -14,6 +15,7 @@
     {
       "id": 2,
       "name": "Bob",
+      "json" : "{ \"data\": { \"os\": \"apple\" } }",
       "age": 25,
       "email": "bob@example.com",
       "address": {
@@ -25,6 +27,7 @@
     {
       "id": 3,
       "name": "Charlie",
+      "json" : "{ \"data\": { \"os\": \"android\" } }",
       "age": 35,
       "email": "charlie@example.com",
       "address": {

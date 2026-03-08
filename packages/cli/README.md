@@ -103,6 +103,7 @@ jwax [OPTIONS] [source]
 | `--timeout <seconds>` | Set timeout for loading JSON from URLs (default: 5 seconds) | `jwax --timeout 10 https://example.com/data.json` |
 | `--output-format <format>` | Set output format for query results in interactive mode (table or json) | `jwax --output-format json data.json` |
 | `--engine <mode>` | Select SQL engine mode (`auto`, `native`, `wasm`), Native is fastest but requires native sql binding, WASM fallback for maximum compatibility | `jwax --engine wasm data.json` |ß
+| `-ijc, --include-json-column` | Include `_json` column on root tables (disabled by default) for SQLite JSON operator queries | `jwax -ijc events.json` |
 
 ## Interactive Mode
 
@@ -183,6 +184,22 @@ Execute a query and output results as JSON:
 
 ```bash
 jwax samples/demo.json --query "SELECT * FROM users LIMIT 5"
+```
+
+## JSON Operators with Optional `_json` Column
+
+Enable `_json` only when needed:
+
+```bash
+jwax -ijc events.json
+```
+
+Use SQLite operators for nested field access:
+
+```sql
+SELECT id, _json ->> '$.metadata.device.os' AS device_os
+FROM events
+WHERE type = 'purchase';
 ```
 
 ## Loading from URL
