@@ -46,7 +46,7 @@ export class ReadlineTerminal implements ITerminalInterface {
       console.log(`Engine: ${this.options.engineName}`);
     }
     console.log(`Discovered ${tables.length} table(s)${timingInfo}.`);
-    console.log('Enter SQL queries (type :help for commands, :schema to view loaded schemas, :quit to exit).\n');
+    console.log('Enter SQL queries (type :help for commands, :schema/:show-schema to view schema, :quit to exit).\n');
 
     if (this.options.enableInlineHints) {
       this.setupInlineHints();
@@ -268,6 +268,15 @@ export class ReadlineTerminal implements ITerminalInterface {
       return;
     }
 
+    if (trimmed === ':show-schema') {
+      this.showSchemaTree();
+      if (this.rl) {
+        this.rl.setPrompt(this.getPrompt());
+      }
+      this.rl?.prompt();
+      return;
+    }
+
     // Handle SQL query (single-line or multiline mode)
     if (this.multilineMode) {
       // Accumulate in buffer
@@ -329,6 +338,7 @@ export class ReadlineTerminal implements ITerminalInterface {
     console.log('  :tables     - List all available tables');
     console.log('  :schema     - Show detailed schema for all tables');
     console.log('  :schema <table> - Show schema for specific table');
+    console.log('  :show-schema - Show schema as a tree view');
     console.log('\nMode indicators in prompt:');
     console.log('  [SL]        - Single-line mode (default)');
     console.log('  [ML]        - Multiline mode');
@@ -401,6 +411,70 @@ export class ReadlineTerminal implements ITerminalInterface {
         console.log(`  Columns: ${table.columns.map(c => `${c.name}:${c.type}`).join(', ')}`);
       });
     }
+  }
+
+  private showSchemaTree(): void {
+    const schema = this.orchestrator.getSchema();
+    if (!schema || schema.tables.size === 0) {
+      console.log('No schema available.');
+      return;
+    }
+
+    const displayNames = new Map<string, string>();
+    schema.tables.forEach((table) => {
+      const leafName = table.originalPath[table.originalPath.length - 1] ?? table.name.split('_').pop() ?? table.name;
+      displayNames.set(table.name, leafName);
+    });
+
+    const children = new Map<string, string[]>();
+    schema.tables.forEach((table) => {
+      if (!table.parentTable) return;
+      const list = children.get(table.parentTable) ?? [];
+      list.push(table.name);
+      children.set(table.parentTable, list);
+    });
+    children.forEach((list) =>
+      list.sort((a, b) => (displayNames.get(a) ?? a).localeCompare(displayNames.get(b) ?? b))
+    );
+
+    const roots = (schema.rootTables.length > 0
+      ? [...schema.rootTables]
+      : Array.from(schema.tables.values()).filter((t) => !t.parentTable).map((t) => t.name)
+    ).sort((a, b) => (displayNames.get(a) ?? a).localeCompare(displayNames.get(b) ?? b));
+
+    console.log('\nSchema Tree:');
+    roots.forEach((root) => {
+      this.renderSchemaTreeNode(root, '', true, children, displayNames, true);
+    });
+  }
+
+  private renderSchemaTreeNode(
+    tableName: string,
+    prefix: string,
+    isLast: boolean,
+    children: Map<string, string[]>,
+    displayNames: Map<string, string>,
+    isRoot: boolean = false
+  ): void {
+    const displayName = displayNames.get(tableName) ?? tableName;
+    if (isRoot) {
+      console.log(displayName);
+    } else {
+      const branch = isLast ? '└─ ' : '├─ ';
+      console.log(`${prefix}${branch}${displayName}`);
+    }
+
+    const nextPrefix = isRoot ? '' : `${prefix}${isLast ? '   ' : '│  '}`;
+    const childTables = children.get(tableName) ?? [];
+    childTables.forEach((child, index) => {
+      this.renderSchemaTreeNode(
+        child,
+        nextPrefix,
+        index === childTables.length - 1,
+        children,
+        displayNames
+      );
+    });
   }
 
   public getBestHint(line: string): string {

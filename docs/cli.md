@@ -140,6 +140,7 @@ curl https://api.example.com/users | jwax --root-name users --query "SELECT * FR
 | `:ml` | Toggle multiline input mode |
 | `:tables` | List all discovered tables |
 | `:schema [table]` | Show schema (all tables or specific) |
+| `:show-schema` | Show schema as a visual tree |
 | `:quit` / `:exit` | Exit the REPL |
 
 ## Testing

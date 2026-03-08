@@ -156,6 +156,160 @@ describe('ReadlineTerminal', () => {
     });
   });
 
+  describe('Schema commands', () => {
+    it('should render schema tree for :show-schema', () => {
+      orchestrator.close();
+      orchestrator = new QueryOrchestrator();
+      orchestrator.loadJson({
+        users: [
+          {
+            id: 1,
+            name: 'Alice',
+            address: [{ city: 'Paris' }]
+          }
+        ]
+      });
+
+      terminal = new ReadlineTerminal(orchestrator, {
+        enableAutocomplete: false,
+        enableInlineHints: false
+      });
+      terminal.start();
+      jest.clearAllMocks();
+
+      const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+      lineHandler(':show-schema');
+
+      const output = consoleSpy.mock.calls.map((c: any) => String(c[0])).join('\n');
+      expect(output).toContain('Schema Tree:');
+      expect(output).toContain('users');
+      expect(output).toContain('address');
+      expect(output).toMatch(/└─ address/);
+
+      consoleSpy.mockRestore();
+    });
+
+    it('should render continuation bars for nested non-last branches', () => {
+      orchestrator.close();
+      orchestrator = new QueryOrchestrator();
+      orchestrator.loadJson({
+        users: [
+          {
+            id: 1,
+            address: [{ geo: [{ lat: 1 }] }],
+            orders: [{ id: 99 }]
+          }
+        ]
+      });
+
+      terminal = new ReadlineTerminal(orchestrator, {
+        enableAutocomplete: false,
+        enableInlineHints: false
+      });
+      terminal.start();
+      jest.clearAllMocks();
+
+      const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+      lineHandler(':show-schema');
+
+      const output = consoleSpy.mock.calls.map((c: any) => String(c[0])).join('\n');
+      expect(output).toContain('users');
+      expect(output).toContain('├─ address');
+      expect(output).toContain('│  └─ geo');
+      expect(output).toContain('└─ orders');
+
+      consoleSpy.mockRestore();
+    });
+
+    it('should sort sibling branches by clean leaf names', () => {
+      orchestrator.close();
+      orchestrator = new QueryOrchestrator();
+      orchestrator.loadJson({
+        users: [
+          {
+            id: 1,
+            zeta: [{ id: 1 }],
+            alpha: [{ id: 2 }],
+            middle: [{ id: 3 }]
+          }
+        ]
+      });
+
+      terminal = new ReadlineTerminal(orchestrator, {
+        enableAutocomplete: false,
+        enableInlineHints: false
+      });
+      terminal.start();
+      jest.clearAllMocks();
+
+      const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+      lineHandler(':show-schema');
+
+      const output = consoleSpy.mock.calls.map((c: any) => String(c[0])).join('\n');
+      const alphaIdx = output.indexOf('├─ alpha');
+      const middleIdx = output.indexOf('├─ middle');
+      const zetaIdx = output.indexOf('└─ zeta');
+      expect(alphaIdx).toBeGreaterThan(-1);
+      expect(middleIdx).toBeGreaterThan(alphaIdx);
+      expect(zetaIdx).toBeGreaterThan(middleIdx);
+
+      consoleSpy.mockRestore();
+    });
+
+    it('should sort multiple root tables by clean names', () => {
+      orchestrator.close();
+      orchestrator = new QueryOrchestrator();
+      orchestrator.loadJson({
+        zroot: [{ id: 1 }],
+        aroot: [{ id: 2 }]
+      });
+
+      terminal = new ReadlineTerminal(orchestrator, {
+        enableAutocomplete: false,
+        enableInlineHints: false
+      });
+      terminal.start();
+      jest.clearAllMocks();
+
+      const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+      lineHandler(':show-schema');
+
+      const lines = consoleSpy.mock.calls.map((c: any) => String(c[0]).trim()).filter(Boolean);
+      const arootIdx = lines.indexOf('aroot');
+      const zrootIdx = lines.indexOf('zroot');
+      expect(arootIdx).toBeGreaterThan(-1);
+      expect(zrootIdx).toBeGreaterThan(arootIdx);
+
+      consoleSpy.mockRestore();
+    });
+
+    it('should fall back to table leaf names when originalPath metadata is missing', () => {
+      const mockedSchema = {
+        rootTables: ['data_clients'],
+        tables: new Map([
+          ['data_clients', { name: 'data_clients', parentTable: undefined, originalPath: ['data', 'clients'], columns: [] }],
+          ['data_clients_accounts', { name: 'data_clients_accounts', parentTable: 'data_clients', originalPath: [], columns: [] }],
+          ['data_clients_orders', { name: 'data_clients_orders', parentTable: 'data_clients', originalPath: ['data', 'clients', 'orders'], columns: [] }],
+          ['data_clients_orders_items', { name: 'data_clients_orders_items', parentTable: 'data_clients_orders', originalPath: [], columns: [] }],
+        ])
+      };
+      const schemaSpy = jest.spyOn(orchestrator, 'getSchema').mockReturnValue(mockedSchema as any);
+
+      const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+      lineHandler(':show-schema');
+
+      const output = consoleSpy.mock.calls.map((c: any) => String(c[0])).join('\n');
+      expect(output).toContain('clients');
+      expect(output).toContain('├─ accounts');
+      expect(output).toContain('└─ orders');
+      expect(output).toContain('   └─ items');
+      expect(output).not.toContain('data_clients_accounts');
+
+      schemaSpy.mockRestore();
+      consoleSpy.mockRestore();
+    });
+  });
+
   describe('Formatter configuration', () => {
     it('should use table formatter by default', () => {
       const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
