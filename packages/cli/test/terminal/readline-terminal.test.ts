@@ -156,6 +156,40 @@ describe('ReadlineTerminal', () => {
     });
   });
 
+  describe('Schema commands', () => {
+    it('should render schema tree for :show-schema', () => {
+      orchestrator.close();
+      orchestrator = new QueryOrchestrator();
+      orchestrator.loadJson({
+        users: [
+          {
+            id: 1,
+            name: 'Alice',
+            address: [{ city: 'Paris' }]
+          }
+        ]
+      });
+
+      terminal = new ReadlineTerminal(orchestrator, {
+        enableAutocomplete: false,
+        enableInlineHints: false
+      });
+      terminal.start();
+      jest.clearAllMocks();
+
+      const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+      lineHandler(':show-schema');
+
+      const output = consoleSpy.mock.calls.map((c: any) => String(c[0])).join('\n');
+      expect(output).toContain('Schema Tree:');
+      expect(output).toContain('users');
+      expect(output).toContain('users_address');
+      expect(output).toMatch(/└─ users_address/);
+
+      consoleSpy.mockRestore();
+    });
+  });
+
   describe('Formatter configuration', () => {
     it('should use table formatter by default', () => {
       const consoleSpy = jest.spyOn(console, 'log').mockImplementation();

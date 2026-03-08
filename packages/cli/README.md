@@ -115,7 +115,7 @@ jwax samples/demo.json
 
 Once started, you can:
 - Enter SQL queries directly
-- Use special commands (`:help`, `:tables`, `:schema`, `:quit`)
+- Use special commands (`:help`, `:tables`, `:schema`, `:show-schema`, `:quit`)
 - Leverage tab completion and inline hints
 - View results as ASCII tables (or JSON with `--output-format json`)
 
@@ -126,6 +126,7 @@ Once started, you can:
 - `:tables` - List all available tables
 - `:schema` - Show schema for all tables
 - `:schema <table>` - Show schema for specific table
+- `:show-schema` - Show schema as a visual tree
 - `:quit` or `:exit` - Exit the CLI
 
 ### Multiline Input Mode
