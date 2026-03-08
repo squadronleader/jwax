@@ -183,8 +183,8 @@ describe('ReadlineTerminal', () => {
       const output = consoleSpy.mock.calls.map((c: any) => String(c[0])).join('\n');
       expect(output).toContain('Schema Tree:');
       expect(output).toContain('users');
-      expect(output).toContain('users_address');
-      expect(output).toMatch(/└─ users_address/);
+      expect(output).toContain('address');
+      expect(output).toMatch(/└─ address/);
 
       consoleSpy.mockRestore();
     });

@@ -420,6 +420,12 @@ export class ReadlineTerminal implements ITerminalInterface {
       return;
     }
 
+    const displayNames = new Map<string, string>();
+    schema.tables.forEach((table) => {
+      const leafName = table.originalPath[table.originalPath.length - 1] ?? table.name.split('_').pop() ?? table.name;
+      displayNames.set(table.name, leafName);
+    });
+
     const children = new Map<string, string[]>();
     schema.tables.forEach((table) => {
       if (!table.parentTable) return;
@@ -427,16 +433,18 @@ export class ReadlineTerminal implements ITerminalInterface {
       list.push(table.name);
       children.set(table.parentTable, list);
     });
-    children.forEach((list) => list.sort());
+    children.forEach((list) =>
+      list.sort((a, b) => (displayNames.get(a) ?? a).localeCompare(displayNames.get(b) ?? b))
+    );
 
     const roots = (schema.rootTables.length > 0
       ? [...schema.rootTables]
       : Array.from(schema.tables.values()).filter((t) => !t.parentTable).map((t) => t.name)
-    ).sort();
+    ).sort((a, b) => (displayNames.get(a) ?? a).localeCompare(displayNames.get(b) ?? b));
 
     console.log('\nSchema Tree:');
     roots.forEach((root) => {
-      this.renderSchemaTreeNode(root, '', true, children, true);
+      this.renderSchemaTreeNode(root, '', true, children, displayNames, true);
     });
   }
 
@@ -445,19 +453,27 @@ export class ReadlineTerminal implements ITerminalInterface {
     prefix: string,
     isLast: boolean,
     children: Map<string, string[]>,
+    displayNames: Map<string, string>,
     isRoot: boolean = false
   ): void {
+    const displayName = displayNames.get(tableName) ?? tableName;
     if (isRoot) {
-      console.log(tableName);
+      console.log(displayName);
     } else {
       const branch = isLast ? '└─ ' : '├─ ';
-      console.log(`${prefix}${branch}${tableName}`);
+      console.log(`${prefix}${branch}${displayName}`);
     }
 
     const nextPrefix = isRoot ? '' : `${prefix}${isLast ? '   ' : '│  '}`;
     const childTables = children.get(tableName) ?? [];
     childTables.forEach((child, index) => {
-      this.renderSchemaTreeNode(child, nextPrefix, index === childTables.length - 1, children);
+      this.renderSchemaTreeNode(
+        child,
+        nextPrefix,
+        index === childTables.length - 1,
+        children,
+        displayNames
+      );
     });
   }
 
