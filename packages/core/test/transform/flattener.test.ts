@@ -120,7 +120,7 @@ describe('flattenJson', () => {
       });
 
       // Address table
-      const addressResult = results.find(r => r.tableName === 'u_address');
+      const addressResult = results.find(r => r.tableName === 'users_address');
       expect(addressResult!.rows.length).toBe(2);
       expect(addressResult!.rows[0]).toEqual({
         _id: 1,
@@ -153,7 +153,7 @@ describe('flattenJson', () => {
       const results = flattenJson(json, schema, idGenerator);
 
       const usersResult = results.find(r => r.tableName === 'users');
-      const profileResult = results.find(r => r.tableName === 'u_profile');
+      const profileResult = results.find(r => r.tableName === 'users_profile');
 
       const userId = usersResult!.rows[0]._id;
       const profileParentId = profileResult!.rows[0]._pid;
@@ -180,7 +180,7 @@ describe('flattenJson', () => {
       const idGenerator = new IDGenerator();
       const results = flattenJson(json, schema, idGenerator);
 
-      const ordersResult = results.find(r => r.tableName === 'u_orders');
+      const ordersResult = results.find(r => r.tableName === 'users_orders');
       expect(ordersResult!.rows.length).toBe(2);
       
       // Both orders should reference the same parent user
@@ -202,7 +202,7 @@ describe('flattenJson', () => {
       const idGenerator = new IDGenerator();
       const results = flattenJson(json, schema, idGenerator);
 
-      const stuffRows = results.find(r => r.tableName === 'if_stuff')!.rows;
+      const stuffRows = results.find(r => r.tableName === 'field2_stuff')!.rows;
       expect(stuffRows.length).toBe(3);
       expect(stuffRows[0]).toMatchObject({ _pid: 1, only_object: 'v1' });
       expect(stuffRows[1]).toMatchObject({ _pid: 2, only_array: 'v2' });
@@ -221,12 +221,12 @@ describe('flattenJson', () => {
       const idGenerator = new IDGenerator();
       const results = flattenJson(json, schema, idGenerator);
 
-      const parentRows = results.find(r => r.tableName === 'i_field2')!.rows;
+      const parentRows = results.find(r => r.tableName === 'items_field2')!.rows;
       expect(parentRows.length).toBe(2);
       expect(parentRows[0]).toMatchObject({ _id: 1, _pid: 1, stuff: 'scalar-value' });
       expect(parentRows[1]).toMatchObject({ _id: 2, _pid: 2, stuff: null });
 
-      const stuffRows = results.find(r => r.tableName === 'if_stuff')!.rows;
+      const stuffRows = results.find(r => r.tableName === 'field2_stuff')!.rows;
       expect(stuffRows.length).toBe(1);
       expect(stuffRows[0]).toMatchObject({ _pid: 2, array_value: 'v2' });
     });
@@ -257,8 +257,8 @@ describe('flattenJson', () => {
       expect(results.length).toBe(3);
 
       const companyResult = results.find(r => r.tableName === 'company');
-      const deptResult = results.find(r => r.tableName === 'c_departments');
-      const empResult = results.find(r => r.tableName === 'cd_employees');
+      const deptResult = results.find(r => r.tableName === 'company_departments');
+      const empResult = results.find(r => r.tableName === 'departments_employees');
 
       expect(companyResult!.rows.length).toBe(1);
       expect(deptResult!.rows.length).toBe(1);
@@ -375,7 +375,7 @@ describe('flattenJson', () => {
       });
 
       // Departments table should have 2 rows, both referencing company
-      const deptResult = results.find(r => r.tableName === 'c_departments');
+      const deptResult = results.find(r => r.tableName === 'company_departments');
       expect(deptResult!.rows.length).toBe(2);
       expect(deptResult!.rows[0]._pid).toBe(1); // references company._id
       expect(deptResult!.rows[1]._pid).toBe(1);
@@ -436,8 +436,8 @@ describe('flattenJson', () => {
       expect(results.length).toBe(3);
 
       const companyResult = results.find(r => r.tableName === 'company');
-      const hqResult = results.find(r => r.tableName === 'c_headquarters');
-      const coordsResult = results.find(r => r.tableName === 'ch_coordinates');
+      const hqResult = results.find(r => r.tableName === 'company_headquarters');
+      const coordsResult = results.find(r => r.tableName === 'headquarters_coordinates');
 
       // Each should have 1 row
       expect(companyResult!.rows.length).toBe(1);

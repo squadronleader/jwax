@@ -155,7 +155,7 @@ describe('QueryOrchestrator', () => {
       const result = orchestrator.executeQuery(`
         SELECT u.name, a.city
         FROM users u
-        JOIN u_address a ON u._id = a._pid
+        JOIN users_address a ON u._id = a._pid
         ORDER BY u.name
       `);
 
@@ -187,8 +187,8 @@ describe('QueryOrchestrator', () => {
       const result = orchestrator.executeQuery(`
         SELECT c.name as company, d.name as dept, e.name as employee
         FROM company c
-        JOIN c_departments d ON c._id = d._pid
-        JOIN cd_employees e ON d._id = e._pid
+        JOIN company_departments d ON c._id = d._pid
+        JOIN departments_employees e ON d._id = e._pid
       `);
 
       expect(result.rows).toHaveLength(1);

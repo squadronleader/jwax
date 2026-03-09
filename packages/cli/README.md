@@ -136,7 +136,7 @@ Use `:ml` to toggle multiline mode for writing complex queries across multiple l
 ### Autocomplete Features
 
 **Tab Completion**: Press Tab to cycle through table name matches (case-insensitive partial matching)
-- Type `us` then Tab → cycles through `users`, `u_address`
+- Type `us` then Tab → cycles through `users`, `users_address`
 - Works in SQL context: `SELECT * FROM or` + Tab → suggests `orders`, `order_items`
 
 ## Output Formats

@@ -63,7 +63,7 @@ describe('discoverSchema', () => {
 
       const schema = discoverSchema(json, { includeJsonColumn: true });
       const usersTable = schema.tables.get('users');
-      const profileTable = schema.tables.get('u_profile');
+      const profileTable = schema.tables.get('users_profile');
 
       expect(usersTable?.columns.map(c => c.name)).toContain('_json');
       expect(profileTable?.columns.map(c => c.name)).not.toContain('_json');
@@ -95,9 +95,9 @@ describe('discoverSchema', () => {
       expect(usersTable?.columns.map(c => c.name)).toEqual(['_id', 'id', 'name']);
 
       // Address table
-      const addressTable = schema.tables.get('u_address');
+      const addressTable = schema.tables.get('users_address');
       expect(addressTable).toBeDefined();
-      expect(addressTable?.name).toBe('u_address');
+      expect(addressTable?.name).toBe('users_address');
       expect(addressTable?.path).toEqual(['users', 'address']);
       expect(addressTable?.parentTable).toBe('users');
       expect(addressTable?.parentKey).toBe('_pid');
@@ -128,11 +128,11 @@ describe('discoverSchema', () => {
 
       expect(schema.tables.size).toBe(3);
       expect(schema.tables.has('users')).toBe(true);
-      expect(schema.tables.has('u_profile')).toBe(true);
-      expect(schema.tables.has('up_settings')).toBe(true);
+      expect(schema.tables.has('users_profile')).toBe(true);
+      expect(schema.tables.has('profile_settings')).toBe(true);
 
-      const settingsTable = schema.tables.get('up_settings');
-      expect(settingsTable?.parentTable).toBe('u_profile');
+      const settingsTable = schema.tables.get('profile_settings');
+      expect(settingsTable?.parentTable).toBe('users_profile');
     });
   });
 
@@ -153,10 +153,29 @@ describe('discoverSchema', () => {
 
       expect(schema.tables.size).toBe(2);
 
-      const ordersTable = schema.tables.get('u_orders');
+      const ordersTable = schema.tables.get('users_orders');
       expect(ordersTable).toBeDefined();
       expect(ordersTable?.parentTable).toBe('users');
       expect(ordersTable?.path).toEqual(['users', 'orders']);
+    });
+
+    it('should expand ancestry when nested table names collide', () => {
+      const json = {
+        users: [
+          { orders: [{ items: [{ sku: 'u-1' }] }] }
+        ],
+        stores: [
+          { orders: [{ items: [{ sku: 's-1' }] }] }
+        ]
+      };
+
+      const schema = discoverSchema(json);
+
+      expect(schema.tables.has('users_orders_items')).toBe(true);
+      expect(schema.tables.has('stores_orders_items')).toBe(true);
+      expect(schema.tables.has('orders_items')).toBe(false);
+      expect(schema.tables.get('users_orders_items')?.parentTable).toBe('users_orders');
+      expect(schema.tables.get('stores_orders_items')?.parentTable).toBe('stores_orders');
     });
   });
 
@@ -171,9 +190,9 @@ describe('discoverSchema', () => {
 
       const schema = discoverSchema(json);
 
-      const stuffTable = schema.tables.get('if_stuff');
+      const stuffTable = schema.tables.get('field2_stuff');
       expect(stuffTable).toBeDefined();
-      expect(stuffTable?.parentTable).toBe('i_field2');
+      expect(stuffTable?.parentTable).toBe('items_field2');
       expect(stuffTable?.columns.map(c => c.name)).toEqual(
         expect.arrayContaining(['_id', '_pid', 'only_object', 'only_array'])
       );
@@ -189,11 +208,11 @@ describe('discoverSchema', () => {
 
       const schema = discoverSchema(json);
 
-      const parentTable = schema.tables.get('i_field2');
+      const parentTable = schema.tables.get('items_field2');
       expect(parentTable).toBeDefined();
       expect(parentTable?.columns.map(c => c.name)).toContain('stuff');
 
-      const stuffTable = schema.tables.get('if_stuff');
+      const stuffTable = schema.tables.get('field2_stuff');
       expect(stuffTable).toBeDefined();
       expect(stuffTable?.columns.map(c => c.name)).toEqual(
         expect.arrayContaining(['_id', '_pid', 'array_value'])
@@ -222,9 +241,9 @@ describe('discoverSchema', () => {
       const schema = discoverSchema(json);
 
       expect(schema.tables.has('users')).toBe(true);
-      expect(schema.tables.has('u_address')).toBe(true);
+      expect(schema.tables.has('users_address')).toBe(true);
       
-      const addressTable = schema.tables.get('u_address');
+      const addressTable = schema.tables.get('users_address');
       expect(addressTable?.parentTable).toBe('users');
     });
 
@@ -328,14 +347,14 @@ describe('discoverSchema', () => {
 
       expect(schema.tables.size).toBe(2);
       expect(schema.tables.has('company')).toBe(true);
-      expect(schema.tables.has('c_departments')).toBe(true);
+      expect(schema.tables.has('company_departments')).toBe(true);
 
       const companyTable = schema.tables.get('company');
       expect(companyTable?.columns.map(c => c.name)).toContain('id');
       expect(companyTable?.columns.map(c => c.name)).toContain('name');
       expect(companyTable?.parentTable).toBeUndefined();
 
-      const deptTable = schema.tables.get('c_departments');
+      const deptTable = schema.tables.get('company_departments');
       expect(deptTable?.parentTable).toBe('company');
       expect(deptTable?.path).toEqual(['company', 'departments']);
     });
@@ -384,14 +403,14 @@ describe('discoverSchema', () => {
 
       expect(schema.tables.size).toBe(3);
       expect(schema.tables.has('company')).toBe(true);
-      expect(schema.tables.has('c_headquarters')).toBe(true);
-      expect(schema.tables.has('ch_coordinates')).toBe(true);
+      expect(schema.tables.has('company_headquarters')).toBe(true);
+      expect(schema.tables.has('headquarters_coordinates')).toBe(true);
 
-      const hqTable = schema.tables.get('c_headquarters');
+      const hqTable = schema.tables.get('company_headquarters');
       expect(hqTable?.parentTable).toBe('company');
 
-      const coordsTable = schema.tables.get('ch_coordinates');
-      expect(coordsTable?.parentTable).toBe('c_headquarters');
+      const coordsTable = schema.tables.get('headquarters_coordinates');
+      expect(coordsTable?.parentTable).toBe('company_headquarters');
     });
   });
 
@@ -441,9 +460,9 @@ describe('discoverSchema', () => {
       expect(schema.tables.size).toBe(3);
       expect(schema.tables.has('root')).toBe(true);
       expect(schema.tables.has('child')).toBe(true);
-      expect(schema.tables.has('c_grand')).toBe(true);
+      expect(schema.tables.has('child_grand')).toBe(true);
       expect(schema.tables.get('child')!.parentTable).toBe('root');
-      expect(schema.tables.get('c_grand')!.parentTable).toBe('child');
+      expect(schema.tables.get('child_grand')!.parentTable).toBe('child');
     });
 
     it('should handle mixed scalars, nested object, and nested array at root', () => {

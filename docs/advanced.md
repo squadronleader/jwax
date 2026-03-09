@@ -36,14 +36,14 @@ JSON with nested structure:
 }
 ```
 
-This automatically creates two tables: `users` and `u_address` with foreign key relationships.
+This automatically creates two tables: `users` and `users_address` with foreign key relationships.
 
 Query nested data:
 
 ```sql
 SELECT u.name, a.city 
 FROM users u 
-JOIN u_address a ON u._id = a._pid
+JOIN users_address a ON u._id = a._pid
 ```
 
 ### Aggregations
@@ -80,8 +80,8 @@ WHERE age > (SELECT AVG(age) FROM users)
 -- Multiple joins with nested objects
 SELECT c.name, d.name, e.name
 FROM company c
-JOIN c_departments d ON c._id = d._pid
-JOIN cd_employees e ON d._id = e._pid
+JOIN company_departments d ON c._id = d._pid
+JOIN departments_employees e ON d._id = e._pid
 
 -- Filtering after aggregation
 SELECT status, COUNT(*) as count
@@ -106,7 +106,7 @@ jwax transforms JSON into relational SQL through a 5-step pipeline:
 ### JSON to Table Mapping
 
 - **Top-level arrays** → become database tables
-- **Nested objects** → become related tables using parent initials + current field (e.g., `users.address` → `u_address`)
+- **Nested objects** → become related tables using parent+child names, expanding ancestry on collisions (e.g., `users.address` → `users_address`)
 - **Synthetic IDs** → All tables get `_id` primary key (UUID)
 - **Foreign Keys** → Nested objects get `_parent_id` referencing parent table's `_id`
 
@@ -126,7 +126,7 @@ jwax transforms JSON into relational SQL through a 5-step pipeline:
 
 Creates two tables:
 - **users** with columns: `_id`, `id`, `name`
-- **u_address** with columns: `_id`, `_parent_id`, `city`, `zip`
+- **users_address** with columns: `_id`, `_parent_id`, `city`, `zip`
 
 ## Automatic Name Sanitization
 

@@ -6,7 +6,7 @@
 import { ColumnDef } from '../engine/types';
 
 export interface TableSchema {
-  name: string;              // Table name (e.g., "users", "u_address")
+  name: string;              // Table name (e.g., "users", "users_address")
   path: string[];            // JSON path (e.g., ["users"], ["users", "address"])
   originalPath: string[];    // Original JSON path before sanitization (e.g., ["users"], ["users", "user-address"])
   columns: ColumnDef[];      // Column definitions

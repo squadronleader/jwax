@@ -13,12 +13,8 @@ export function pathToTableName(path: string[]): string {
     return sanitizedPath[0];
   }
 
-  const parentInitials = sanitizedPath
-    .slice(0, -1)
-    .map(segment => segment[0] ?? '')
-    .join('');
-
-  return `${parentInitials}_${sanitizedPath[sanitizedPath.length - 1]}`;
+  // For nested paths, the discovery layer expands ancestry only on collisions.
+  return sanitizedPath.slice(-2).join('_');
 }
 
 export function sanitizeIdentifier(str: string): string {

@@ -5,12 +5,12 @@ describe('pathToTableName', () => {
     expect(pathToTableName(['users'])).toBe('users');
   });
 
-  it('should use parent initials for nested paths', () => {
-    expect(pathToTableName(['users', 'address'])).toBe('u_address');
+  it('should use parent + child for nested paths', () => {
+    expect(pathToTableName(['users', 'address'])).toBe('users_address');
   });
 
   it('should handle three levels', () => {
-    expect(pathToTableName(['data', 'clients', 'orders'])).toBe('dc_orders');
+    expect(pathToTableName(['data', 'clients', 'orders'])).toBe('clients_orders');
   });
 
   describe('special character sanitization', () => {
@@ -85,7 +85,7 @@ describe('pathToTableName', () => {
     });
 
     it('should handle multiple segments starting with numbers', () => {
-      expect(pathToTableName(['2024data', '123items'])).toBe('___123items');
+      expect(pathToTableName(['2024data', '123items'])).toBe('_2024data__123items');
     });
   });
 
