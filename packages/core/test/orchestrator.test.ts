@@ -202,7 +202,7 @@ describe('QueryOrchestrator', () => {
         SELECT c.name as company, d.name as dept, e.name as employee
         FROM company c
         JOIN company_departments d ON c._id = d._pid
-        JOIN company_departments_employees e ON d._id = e._pid
+        JOIN departments_employees e ON d._id = e._pid
       `);
 
       expect(result.rows).toHaveLength(1);

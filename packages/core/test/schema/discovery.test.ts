@@ -151,9 +151,9 @@ describe('discoverSchema', () => {
       expect(schema.tables.size).toBe(3);
       expect(schema.tables.has('users')).toBe(true);
       expect(schema.tables.has('users_profile')).toBe(true);
-      expect(schema.tables.has('users_profile_settings')).toBe(true);
+      expect(schema.tables.has('profile_settings')).toBe(true);
 
-      const settingsTable = schema.tables.get('users_profile_settings');
+      const settingsTable = schema.tables.get('profile_settings');
       expect(settingsTable?.parentTable).toBe('users_profile');
     });
   });
@@ -180,6 +180,25 @@ describe('discoverSchema', () => {
       expect(ordersTable?.parentTable).toBe('users');
       expect(ordersTable?.path).toEqual(['users', 'orders']);
     });
+
+    it('should expand ancestry when nested table names collide', () => {
+      const json = {
+        users: [
+          { orders: [{ items: [{ sku: 'u-1' }] }] }
+        ],
+        stores: [
+          { orders: [{ items: [{ sku: 's-1' }] }] }
+        ]
+      };
+
+      const schema = discoverSchema(json);
+
+      expect(schema.tables.has('users_orders_items')).toBe(true);
+      expect(schema.tables.has('stores_orders_items')).toBe(true);
+      expect(schema.tables.has('orders_items')).toBe(false);
+      expect(schema.tables.get('users_orders_items')?.parentTable).toBe('users_orders');
+      expect(schema.tables.get('stores_orders_items')?.parentTable).toBe('stores_orders');
+    });
   });
 
   describe('polymorphic path shapes', () => {
@@ -193,7 +212,7 @@ describe('discoverSchema', () => {
 
       const schema = discoverSchema(json);
 
-      const stuffTable = schema.tables.get('items_field2_stuff');
+      const stuffTable = schema.tables.get('field2_stuff');
       expect(stuffTable).toBeDefined();
       expect(stuffTable?.parentTable).toBe('items_field2');
       expect(stuffTable?.columns.map(c => c.name)).toEqual(
@@ -215,7 +234,7 @@ describe('discoverSchema', () => {
       expect(parentTable).toBeDefined();
       expect(parentTable?.columns.map(c => c.name)).toContain('stuff');
 
-      const stuffTable = schema.tables.get('items_field2_stuff');
+      const stuffTable = schema.tables.get('field2_stuff');
       expect(stuffTable).toBeDefined();
       expect(stuffTable?.columns.map(c => c.name)).toEqual(
         expect.arrayContaining(['_id', '_pid', 'array_value'])
@@ -407,12 +426,12 @@ describe('discoverSchema', () => {
       expect(schema.tables.size).toBe(3);
       expect(schema.tables.has('company')).toBe(true);
       expect(schema.tables.has('company_headquarters')).toBe(true);
-      expect(schema.tables.has('company_headquarters_coordinates')).toBe(true);
+      expect(schema.tables.has('headquarters_coordinates')).toBe(true);
 
       const hqTable = schema.tables.get('company_headquarters');
       expect(hqTable?.parentTable).toBe('company');
 
-      const coordsTable = schema.tables.get('company_headquarters_coordinates');
+      const coordsTable = schema.tables.get('headquarters_coordinates');
       expect(coordsTable?.parentTable).toBe('company_headquarters');
     });
   });

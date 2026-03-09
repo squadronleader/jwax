@@ -5,12 +5,12 @@ describe('pathToTableName', () => {
     expect(pathToTableName(['users'])).toBe('users');
   });
 
-  it('should join multiple segments with underscore', () => {
+  it('should use parent + child for nested paths', () => {
     expect(pathToTableName(['users', 'address'])).toBe('users_address');
   });
 
   it('should handle three levels', () => {
-    expect(pathToTableName(['data', 'clients', 'orders'])).toBe('data_clients_orders');
+    expect(pathToTableName(['data', 'clients', 'orders'])).toBe('clients_orders');
   });
 
   describe('special character sanitization', () => {

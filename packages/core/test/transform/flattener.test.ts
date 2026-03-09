@@ -234,7 +234,7 @@ describe('flattenJson', () => {
       const idGenerator = new IDGenerator();
       const results = flattenJson(json, schema, idGenerator);
 
-      const stuffRows = results.find(r => r.tableName === 'items_field2_stuff')!.rows;
+      const stuffRows = results.find(r => r.tableName === 'field2_stuff')!.rows;
       expect(stuffRows.length).toBe(3);
       expect(stuffRows[0]).toMatchObject({ _pid: 1, only_object: 'v1' });
       expect(stuffRows[1]).toMatchObject({ _pid: 2, only_array: 'v2' });
@@ -258,7 +258,7 @@ describe('flattenJson', () => {
       expect(parentRows[0]).toMatchObject({ _id: 1, _pid: 1, stuff: 'scalar-value' });
       expect(parentRows[1]).toMatchObject({ _id: 2, _pid: 2, stuff: null });
 
-      const stuffRows = results.find(r => r.tableName === 'items_field2_stuff')!.rows;
+      const stuffRows = results.find(r => r.tableName === 'field2_stuff')!.rows;
       expect(stuffRows.length).toBe(1);
       expect(stuffRows[0]).toMatchObject({ _pid: 2, array_value: 'v2' });
     });
@@ -290,7 +290,7 @@ describe('flattenJson', () => {
 
       const companyResult = results.find(r => r.tableName === 'company');
       const deptResult = results.find(r => r.tableName === 'company_departments');
-      const empResult = results.find(r => r.tableName === 'company_departments_employees');
+      const empResult = results.find(r => r.tableName === 'departments_employees');
 
       expect(companyResult!.rows.length).toBe(1);
       expect(deptResult!.rows.length).toBe(1);
@@ -469,7 +469,7 @@ describe('flattenJson', () => {
 
       const companyResult = results.find(r => r.tableName === 'company');
       const hqResult = results.find(r => r.tableName === 'company_headquarters');
-      const coordsResult = results.find(r => r.tableName === 'company_headquarters_coordinates');
+      const coordsResult = results.find(r => r.tableName === 'headquarters_coordinates');
 
       // Each should have 1 row
       expect(companyResult!.rows.length).toBe(1);

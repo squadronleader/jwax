@@ -430,7 +430,7 @@ WHERE a.city = 'New York'
 **Creates Three Tables:**
 - `company`
 - `company_departments`
-- `company_departments_employees`
+- `departments_employees`
 
 **Query all three levels:**
 ```sql
@@ -441,7 +441,7 @@ SELECT
   e.role
 FROM company c
 JOIN company_departments d ON c._id = d._pid
-JOIN company_departments_employees e ON d._id = e._pid
+JOIN departments_employees e ON d._id = e._pid
 ```
 
 ## Advanced Queries
@@ -694,7 +694,7 @@ JSON keys are automatically sanitized:
 - Table names are lowercase
 - Special characters are replaced with underscores (e.g., `"user-list"` → `user_list`)
 - Names starting with numbers are prefixed with `_` (e.g., `"2024data"` → `_2024data`)
-- Nested objects create new tables with underscore separators (e.g., `users.address` → `users_address`)
+- Nested objects create new tables using parent+child names, expanding ancestry on collisions (e.g., `users.address` → `users_address`)
 
 **Example:**
 ```
@@ -803,7 +803,7 @@ LEFT JOIN child_table c ON p._id = c._pid
 ║  JOINS (for nested data)                                  ║
 ║  SELECT p.*, c.*                                          ║
 ║  FROM parent p                                            ║
-║  JOIN parent_child c ON p._id = c._pid                    ║
+║  JOIN parent_child c ON p._id = c._pid                         ║
 ╠═══════════════════════════════════════════════════════════╣
 ║  AGGREGATIONS                                             ║
 ║  SELECT COUNT(*), SUM(col), AVG(col) FROM table           ║

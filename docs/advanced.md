@@ -81,7 +81,7 @@ WHERE age > (SELECT AVG(age) FROM users)
 SELECT c.name, d.name, e.name
 FROM company c
 JOIN company_departments d ON c._id = d._pid
-JOIN company_departments_employees e ON d._id = e._pid
+JOIN departments_employees e ON d._id = e._pid
 
 -- Filtering after aggregation
 SELECT status, COUNT(*) as count
@@ -106,7 +106,7 @@ jwax transforms JSON into relational SQL through a 5-step pipeline:
 ### JSON to Table Mapping
 
 - **Top-level arrays** → become database tables
-- **Nested objects** → become related tables with naming pattern `{parent}_{field}`
+- **Nested objects** → become related tables using parent+child names, expanding ancestry on collisions (e.g., `users.address` → `users_address`)
 - **Synthetic IDs** → All tables get `_id` primary key (UUID)
 - **Foreign Keys** → Nested objects get `_parent_id` referencing parent table's `_id`
 

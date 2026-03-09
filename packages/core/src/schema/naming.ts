@@ -8,10 +8,13 @@ export function pathToTableName(path: string[]): string {
     throw new Error('Path cannot be empty');
   }
 
-  // Join with underscore and sanitize
-  return path
-    .map(segment => sanitizeIdentifier(segment))
-    .join('_');
+  const sanitizedPath = path.map(segment => sanitizeIdentifier(segment));
+  if (sanitizedPath.length === 1) {
+    return sanitizedPath[0];
+  }
+
+  // For nested paths, the discovery layer expands ancestry only on collisions.
+  return sanitizedPath.slice(-2).join('_');
 }
 
 export function sanitizeIdentifier(str: string): string {
