@@ -79,6 +79,38 @@ describe('flattenJson', () => {
       expect(usersResult).toBeDefined();
       expect(usersResult!.rows[0]._json).toBe('{"id":1,"name":"Alice","metadata":{"device":{"os":"ios"}}}');
     });
+
+    it('should flatten scalar arrays into value rows', () => {
+      const json = {
+        test: [1, 2, 3]
+      };
+
+      const schema = discoverSchema(json);
+      const idGenerator = new IDGenerator();
+      const results = flattenJson(json, schema, idGenerator);
+      const testRows = results.find(r => r.tableName === 'test')!.rows;
+
+      expect(testRows).toEqual([
+        { _id: 1, value: 1 },
+        { _id: 2, value: 2 },
+        { _id: 3, value: 3 }
+      ]);
+    });
+
+    it('should flatten mixed arrays without dropping scalar values', () => {
+      const json = {
+        test: [1, { id: 2, name: 'Bob' }, 3]
+      };
+
+      const schema = discoverSchema(json);
+      const idGenerator = new IDGenerator();
+      const results = flattenJson(json, schema, idGenerator);
+      const testRows = results.find(r => r.tableName === 'test')!.rows;
+
+      expect(testRows[0]).toMatchObject({ _id: 1, value: 1, id: null, name: null });
+      expect(testRows[1]).toMatchObject({ _id: 2, value: null, id: 2, name: 'Bob' });
+      expect(testRows[2]).toMatchObject({ _id: 3, value: 3, id: null, name: null });
+    });
   });
 
   describe('nested objects', () => {
