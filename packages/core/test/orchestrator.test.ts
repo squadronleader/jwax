@@ -100,6 +100,20 @@ describe('QueryOrchestrator', () => {
       expect(result.rows[0]).toEqual([3, 30]);
     });
 
+    it('should query scalar and mixed arrays without dropping scalar items', () => {
+      const json = {
+        test: [1, { id: 2 }, 3]
+      };
+
+      orchestrator.loadJson(json);
+
+      const countResult = orchestrator.executeQuery('SELECT COUNT(*) as count FROM test');
+      expect(countResult.rows[0]).toEqual([3]);
+
+      const scalarResult = orchestrator.executeQuery('SELECT value FROM test WHERE value IS NOT NULL ORDER BY _id');
+      expect(scalarResult.rows).toEqual([[1], [3]]);
+    });
+
     it('should support GROUP BY', () => {
       const json = {
         orders: [

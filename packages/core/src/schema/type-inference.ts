@@ -64,6 +64,7 @@ export function inferColumnTypes(
   // First pass: collect all property names across all objects
   for (const obj of samplesToCheck) {
     if (obj === null || typeof obj !== 'object' || Array.isArray(obj)) {
+      allPropertyNames.add('value');
       continue;
     }
 
@@ -78,6 +79,31 @@ export function inferColumnTypes(
 
   // Second pass: check each object for each property
   for (const obj of samplesToCheck) {
+    if (obj === null || typeof obj !== 'object' || Array.isArray(obj)) {
+      const key = 'value';
+      const seenProps = new Set<string>([key]);
+
+      if (!propertyTypes.has(key)) {
+        propertyTypes.set(key, new Set());
+        propertyNullable.set(key, false);
+      }
+
+      const type = inferType(obj);
+      propertyTypes.get(key)!.add(type);
+
+      if (obj === null || obj === undefined) {
+        propertyNullable.set(key, true);
+      }
+
+      for (const propName of allPropertyNames) {
+        if (!seenProps.has(propName)) {
+          propertyNullable.set(propName, true);
+        }
+      }
+
+      continue;
+    }
+
     if (obj === null || typeof obj !== 'object' || Array.isArray(obj)) {
       continue;
     }

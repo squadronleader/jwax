@@ -172,4 +172,17 @@ describe('inferColumnTypes', () => {
     expect(columns.size).toBe(1);
     expect(columns.has('id')).toBe(true);
   });
+
+  it('should infer value column for scalar arrays', () => {
+    const columns = inferColumnTypes([1, 2, 3]);
+    expect(columns.size).toBe(1);
+    expect(columns.get('value')?.type).toBe('INTEGER');
+  });
+
+  it('should infer both object and scalar columns for mixed arrays', () => {
+    const columns = inferColumnTypes([{ id: 1 }, 'two']);
+    expect(columns.has('id')).toBe(true);
+    expect(columns.has('value')).toBe(true);
+    expect(columns.get('value')?.type).toBe('TEXT');
+  });
 });
