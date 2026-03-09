@@ -56,5 +56,7 @@
       "total": 149.99,
       "status": "delivered"
     }
-  ]
+  ],
+  "scalarArray": [1,2,3],
+  "mixedArray": [1,2,{ "id": 3 }, { "os": "win", "meta": [ { "issue": 1}] }]
 }

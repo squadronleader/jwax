@@ -77,9 +77,7 @@ function processTable(
 
   // Process each item in the array
   for (const item of current) {
-    if (item === null || typeof item !== 'object' || Array.isArray(item)) {
-      continue;
-    }
+    const isObjectItem = item !== null && typeof item === 'object' && !Array.isArray(item);
 
     // Generate ID for this row
     const rowId = idGenerator.nextId(table.name);
@@ -118,9 +116,11 @@ function processTable(
 
       // Get value from item using original column name
       const originalColumnName = column.originalName || column.name;
-      const value = item[originalColumnName];
+      const value = isObjectItem
+        ? item[originalColumnName]
+        : (originalColumnName === 'value' ? item : null);
 
-      if (childPathKeys.has(originalColumnName) && value !== null && typeof value === 'object') {
+      if (isObjectItem && childPathKeys.has(originalColumnName) && value !== null && typeof value === 'object') {
         row[column.name] = null;
         continue;
       }
@@ -133,6 +133,10 @@ function processTable(
 
     // Add row to table
     tableRows.get(table.name)!.push(row);
+
+    if (!isObjectItem) {
+      continue;
+    }
 
     // Process nested tables (children of this table)
     for (const childTable of schema.tables.values()) {

@@ -68,6 +68,28 @@ describe('discoverSchema', () => {
       expect(usersTable?.columns.map(c => c.name)).toContain('_json');
       expect(profileTable?.columns.map(c => c.name)).not.toContain('_json');
     });
+
+    it('should discover value column for scalar arrays', () => {
+      const json = {
+        test: [1, 2, 3]
+      };
+
+      const schema = discoverSchema(json);
+      const testTable = schema.tables.get('test');
+      expect(testTable?.columns.map(c => c.name)).toEqual(['_id', 'value']);
+    });
+
+    it('should discover value and object columns for mixed arrays', () => {
+      const json = {
+        test: [1, { id: 2, name: 'Bob' }]
+      };
+
+      const schema = discoverSchema(json);
+      const testTable = schema.tables.get('test');
+      expect(testTable?.columns.map(c => c.name)).toEqual(
+        expect.arrayContaining(['_id', 'value', 'id', 'name'])
+      );
+    });
   });
 
   describe('nested objects', () => {
